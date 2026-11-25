@@ -16,7 +16,7 @@ class Config:
     SESSION_COOKIE_SAMESITE = "Lax"
 
     # AES-256-GCM Master Key (32 bytes = 64 hex characters)
-    AES_SECRET_KEY = os.getenv("AES_SECRET_KEY", "7a94b593efd9b3d2b271d18408f90c4c43bc204f7626960d70b02bcda772183e")
+    AES_SECRET_KEY = os.getenv("AES_SECRET_KEY")
 
     # MySQL Configuration
     DB_HOST = os.getenv("DB_HOST", "127.0.0.1")

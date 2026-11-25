@@ -1,0 +1,97 @@
+{% extends "dashboard_layout.html" %}
+
+{% block title %}System Audit Logs – MediChain{% endblock %}
+
+{% block header_title %}Audit & Security Monitoring 🛡️{% endblock %}
+{% block header_subtitle %}Comprehensive audit trail recording all user access, record uploads, permissions, and integrity verifications.{% endblock %}
+
+{% block content %}
+<!-- Security Monitor Alert Banner -->
+<div class="cute-card mb-4 p-4" style="background: linear-gradient(135deg, rgba(221, 245, 227, 0.5) 0%, rgba(220, 238, 255, 0.5) 100%); border: 1px solid #BCE7C6;">
+  <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+    <div class="d-flex align-items-center gap-3">
+      <div class="stat-icon" style="background: #FFFFFF; color: #2E7D32;">
+        <i class="fa-solid fa-shield-heart"></i>
+      </div>
+      <div>
+        <h6 class="fw-bold mb-1">Security Status: All Systems Operational</h6>
+        <p class="text-muted small mb-0">Role-based access control and smart contract cryptographic verification are actively enforced across all routes.</p>
+      </div>
+    </div>
+    <span class="badge badge-cute badge-cute-mint px-3 py-2">0 Security Alerts</span>
+  </div>
+</div>
+
+<div class="cute-card p-0">
+  <div class="p-3 px-4 border-bottom d-flex align-items-center justify-content-between">
+    <div>
+      <h5 class="fw-bold mb-0">Audit Event Logs</h5>
+      <small class="text-muted">Total events recorded: {{ logs|length }}</small>
+    </div>
+    <span class="badge badge-cute badge-cute-lavender">Chronological Order</span>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-cute">
+      <thead>
+        <tr>
+          <th>Log ID</th>
+          <th>Action</th>
+          <th>User</th>
+          <th>Role</th>
+          <th>Event Details</th>
+          <th>IP Address</th>
+          <th>Timestamp</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if logs %}
+          {% for log in logs %}
+            <tr>
+              <td>
+                <span class="text-muted" style="font-size: 0.8rem;">#{{ log.id }}</span>
+              </td>
+              <td>
+                {% if 'LOGIN' in log.action %}
+                  <span class="badge badge-cute badge-cute-mint">{{ log.action }}</span>
+                {% elif 'UPLOAD' in log.action %}
+                  <span class="badge badge-cute badge-cute-blue">{{ log.action }}</span>
+                {% elif 'APPROVE' in log.action %}
+                  <span class="badge badge-cute badge-cute-lavender">{{ log.action }}</span>
+                {% elif 'REVOKE' in log.action %}
+                  <span class="badge badge-cute badge-cute-danger">{{ log.action }}</span>
+                {% elif 'TAMPER' in log.action or 'FAILED' in log.action %}
+                  <span class="badge badge-cute badge-cute-danger">{{ log.action }}</span>
+                {% else %}
+                  <span class="badge badge-cute badge-cute-peach">{{ log.action }}</span>
+                {% endif %}
+              </td>
+              <td>
+                <span class="fw-bold">{{ log.user_id or 'System' }}</span>
+              </td>
+              <td>
+                <span class="badge badge-cute badge-cute-lavender" style="font-size: 0.72rem;">
+                  {{ log.user_role|capitalize if log.user_role else 'System' }}
+                </span>
+              </td>
+              <td>
+                <small class="text-muted">{{ log.details or '-' }}</small>
+              </td>
+              <td>
+                <small class="text-muted font-monospace">{{ log.ip_address or '127.0.0.1' }}</small>
+              </td>
+              <td>
+                <small class="text-muted">{{ log.created_at.strftime('%Y-%m-%d %H:%M:%S') if log.created_at else 'Recent' }}</small>
+              </td>
+            </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td colspan="7" class="text-center py-5 text-muted small">No audit logs recorded yet.</td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

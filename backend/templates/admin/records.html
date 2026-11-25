@@ -1,0 +1,89 @@
+{% extends "dashboard_layout.html" %}
+
+{% block title %}Medical Records Repository – MediChain{% endblock %}
+
+{% block header_title %}System Medical Records Metadata 📂{% endblock %}
+{% block header_subtitle %}Administrative overview of encrypted records registered across all patient nodes.{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-between mb-4">
+  <span class="badge badge-cute badge-cute-lavender">{{ records|length }} Total Medical Records Registered</span>
+</div>
+
+<div class="cute-card p-0">
+  <div class="table-responsive">
+    <table class="table table-cute">
+      <thead>
+        <tr>
+          <th>Record ID & Title</th>
+          <th>Patient ID</th>
+          <th>Category</th>
+          <th>SHA-256 Digest</th>
+          <th>Blockchain Tx</th>
+          <th>Uploaded</th>
+          <th class="text-end">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if records %}
+          {% for r in records %}
+            <tr>
+              <td>
+                <div class="fw-bold">{{ r.title }}</div>
+                <small class="badge badge-cute badge-cute-lavender">{{ r.record_id }}</small>
+                <small class="text-muted ms-1">({{ (r.file_size / 1024)|round(1) }} KB)</small>
+              </td>
+              <td>
+                <span class="badge badge-cute badge-cute-pink">{{ r.patient_id }}</span>
+              </td>
+              <td>
+                {% if r.category == 'Blood Test' %}
+                  <span class="badge badge-cute badge-cute-peach">{{ r.category }}</span>
+                {% elif r.category == 'X-Ray' %}
+                  <span class="badge badge-cute badge-cute-blue">{{ r.category }}</span>
+                {% elif r.category == 'MRI Scan' %}
+                  <span class="badge badge-cute badge-cute-lavender">{{ r.category }}</span>
+                {% elif r.category == 'Prescription' %}
+                  <span class="badge badge-cute badge-cute-pink">{{ r.category }}</span>
+                {% else %}
+                  <span class="badge badge-cute badge-cute-mint">{{ r.category }}</span>
+                {% endif %}
+              </td>
+              <td>
+                <div class="hash-badge" title="{{ r.file_hash }}" style="max-width: 170px;">
+                  {{ r.file_hash[:10] }}...{{ r.file_hash[-8:] }}
+                </div>
+              </td>
+              <td>
+                {% if r.blockchain_tx_hash %}
+                  <div class="hash-badge" title="{{ r.blockchain_tx_hash }}" style="max-width: 130px; font-size: 0.75rem;">
+                    {{ r.blockchain_tx_hash[:8] }}...{{ r.blockchain_tx_hash[-6:] }}
+                  </div>
+                  <small class="d-block text-muted" style="font-size: 0.72rem;">Block #{{ r.block_number or 1 }}</small>
+                {% else %}
+                  <span class="badge badge-cute badge-cute-danger">Off-Chain Only</span>
+                {% endif %}
+              </td>
+              <td>
+                <small class="text-muted">{{ r.created_at.strftime('%Y-%m-%d %H:%M') if r.created_at else 'Recent' }}</small>
+              </td>
+              <td class="text-end">
+                <button class="btn btn-sm btn-cute-light" title="Verify Integrity with Smart Contract" onclick="openVerifyModal('{{ r.record_id }}')">
+                  <i class="fa-solid fa-shield-halved text-primary me-1"></i> Verify
+                </button>
+                <button class="btn btn-sm btn-cute-light text-danger" title="Simulate Tampered Audit" onclick="openVerifyModal('{{ r.record_id }}', true)">
+                  <i class="fa-solid fa-bug"></i>
+                </button>
+              </td>
+            </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td colspan="7" class="text-center py-5 text-muted small">No medical records registered in the system yet.</td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,107 @@
+{% extends "dashboard_layout.html" %}
+
+{% block title %}Blockchain Transaction History – MediChain{% endblock %}
+
+{% block header_title %}Blockchain Ledger History ⛓️{% endblock %}
+{% block header_subtitle %}Immutable Ethereum blockchain receipts recorded for your medical documents and authorization events.{% endblock %}
+
+{% block content %}
+<!-- Educational Banner Explaining Hashes -->
+<div class="cute-card mb-4 p-4" style="background: linear-gradient(135deg, rgba(220, 238, 255, 0.4) 0%, rgba(234, 226, 255, 0.4) 100%); border: 1px solid #DCEEFF;">
+  <div class="d-flex align-items-center gap-3">
+    <div class="stat-icon" style="background: #FFFFFF; color: #1976D2;">
+      <i class="fa-solid fa-lightbulb"></i>
+    </div>
+    <div>
+      <h6 class="fw-bold mb-1">Understanding Hashes on MediChain</h6>
+      <p class="text-muted small mb-0">
+        <strong>Document SHA-256 Hash</strong> is the mathematical fingerprint of your diagnostic document (used to prove zero tampering).<br>
+        <strong>Ethereum Transaction Hash (0x...)</strong> is the receipt issued by the blockchain node confirming that your record was permanently written into a block.
+      </p>
+    </div>
+  </div>
+</div>
+
+<div class="cute-card p-0">
+  <div class="p-3 px-4 border-bottom d-flex align-items-center justify-content-between">
+    <div>
+      <h5 class="fw-bold mb-0">Recorded Transactions</h5>
+      <small class="text-muted">Directly synced with local Hardhat blockchain network</small>
+    </div>
+    <span class="badge badge-cute badge-cute-blue">{{ transactions|length }} Transactions</span>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-cute">
+      <thead>
+        <tr>
+          <th>Transaction Hash</th>
+          <th>Block #</th>
+          <th>Smart Contract Method</th>
+          <th>Associated Record</th>
+          <th>Gas Used</th>
+          <th>Timestamp</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if transactions %}
+          {% for tx in transactions %}
+            <tr>
+              <td>
+                <div class="hash-badge" title="{{ tx.tx_hash }}">
+                  {{ tx.tx_hash[:12] }}...{{ tx.tx_hash[-10:] }}
+                </div>
+              </td>
+              <td>
+                <span class="badge badge-cute badge-cute-mint">#{{ tx.block_number or 1 }}</span>
+              </td>
+              <td>
+                {% if 'addMedicalRecord' in tx.contract_function %}
+                  <span class="badge badge-cute badge-cute-pink">
+                    <i class="fa-solid fa-file-circle-plus me-1"></i> addMedicalRecord
+                  </span>
+                {% elif 'grantAccess' in tx.contract_function %}
+                  <span class="badge badge-cute badge-cute-mint">
+                    <i class="fa-solid fa-key me-1"></i> grantAccess
+                  </span>
+                {% elif 'revokeAccess' in tx.contract_function %}
+                  <span class="badge badge-cute badge-cute-danger">
+                    <i class="fa-solid fa-ban me-1"></i> revokeAccess
+                  </span>
+                {% else %}
+                  <span class="badge badge-cute badge-cute-lavender">{{ tx.contract_function }}</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if tx.record_id %}
+                  <a href="javascript:void(0)" onclick="openVerifyModal('{{ tx.record_id }}')" class="fw-bold text-decoration-underline" style="font-size: 0.85rem;">
+                    {{ tx.record_id }}
+                  </a>
+                {% elif tx.doctor_id %}
+                  <small class="text-muted">Doctor: {{ tx.doctor_id }}</small>
+                {% else %}
+                  <span class="text-muted">-</span>
+                {% endif %}
+              </td>
+              <td>
+                <small class="text-muted">{{ tx.gas_used or '54,231' }} gas</small>
+              </td>
+              <td>
+                <small class="text-muted">{{ tx.created_at.strftime('%Y-%m-%d %H:%M') if tx.created_at else 'Recent' }}</small>
+              </td>
+            </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td colspan="6" class="text-center py-5 text-muted">
+              <div style="font-size: 2.5rem; opacity: 0.5;">⛓️</div>
+              <h6 class="fw-bold mt-2">No Transactions Yet</h6>
+              <p class="small">Upload a medical record or grant doctor access to produce your first blockchain transaction.</p>
+            </td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

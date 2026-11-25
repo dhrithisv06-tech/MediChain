@@ -1,0 +1,434 @@
+{% extends "base.html" %}
+
+{% block title %}MediChain – Your Health Records. Your Control. Secured by Blockchain.{% endblock %}
+
+{% block layout %}
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg py-3 sticky-top" style="background: rgba(255, 253, 248, 0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--card-border);">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center gap-2 fw-bold fs-4" href="{{ url_for('main.index') }}">
+      <div class="brand-logo-icon">
+        <i class="fa-solid fa-heart-pulse"></i>
+      </div>
+      <span style="color: var(--text-dark);">MediChain</span>
+    </a>
+    
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navContent">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navContent">
+      <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-3">
+        <li class="nav-item"><a class="nav-link fw-semibold text-dark" href="#how-it-works">How It Works</a></li>
+        <li class="nav-item"><a class="nav-link fw-semibold text-dark" href="#features">Key Features</a></li>
+        <li class="nav-item"><a class="nav-link fw-semibold text-dark" href="#security">Blockchain Security</a></li>
+        <li class="nav-item"><a class="nav-link fw-semibold text-dark" href="#roles">Who It's For</a></li>
+      </ul>
+
+      <div class="d-flex align-items-center gap-2">
+        {% if session.get('user_id') %}
+          {% if session.get('role') == 'patient' %}
+            <a href="{{ url_for('patient.dashboard') }}" class="btn btn-cute-primary">Go to Dashboard</a>
+          {% elif session.get('role') == 'doctor' %}
+            <a href="{{ url_for('doctor.dashboard') }}" class="btn btn-cute-secondary">Doctor Portal</a>
+          {% elif session.get('role') == 'admin' %}
+            <a href="{{ url_for('admin.dashboard') }}" class="btn btn-cute-light">Admin Dashboard</a>
+          {% endif %}
+        {% else %}
+          <a href="{{ url_for('auth.login') }}" class="btn btn-cute-light">Sign In</a>
+          <a href="{{ url_for('auth.register') }}" class="btn btn-cute-primary">Get Started</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="py-5 overflow-hidden">
+  <div class="container py-lg-4">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6">
+        <div class="d-inline-flex align-items-center gap-2 badge badge-cute badge-cute-pink mb-3 px-3 py-2">
+          <i class="fa-solid fa-sparkles text-danger"></i>
+          <span>Next-Gen Healthcare Cryptography</span>
+        </div>
+        <h1 class="display-4 fw-bolder mb-3" style="line-height: 1.15; color: #2C3E50;">
+          Your Health Records.<br>
+          <span style="background: linear-gradient(135deg, #78BFA3 0%, #8E7CDE 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+            Your Control.
+          </span><br>
+          Secured by Blockchain.
+        </h1>
+        <p class="lead text-muted mb-4" style="font-size: 1.15rem;">
+          MediChain puts patients back in charge of their medical history. Upload encrypted diagnostic reports, grant fine-grained permissions to trusted physicians, and mathematically prove document integrity using Ethereum smart contracts.
+        </p>
+
+        <div class="d-flex flex-wrap gap-3 mb-4">
+          <a href="{{ url_for('auth.register') }}?role=patient" class="btn btn-cute-primary btn-lg px-4 py-3">
+            <i class="fa-solid fa-user-plus me-2"></i> Register as Patient
+          </a>
+          <a href="{{ url_for('auth.register') }}?role=doctor" class="btn btn-cute-secondary btn-lg px-4 py-3">
+            <i class="fa-solid fa-user-doctor me-2"></i> Join as Doctor
+          </a>
+          <a href="{{ url_for('auth.login') }}" class="btn btn-cute-light btn-lg px-4 py-3">
+            <i class="fa-solid fa-arrow-right-to-bracket me-2"></i> Sign In
+          </a>
+        </div>
+
+        <div class="d-flex align-items-center gap-4 pt-2">
+          <div class="d-flex align-items-center gap-2">
+            <i class="fa-solid fa-circle-check text-success fs-5"></i>
+            <small class="fw-bold text-muted">AES-256-GCM Encrypted</small>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <i class="fa-solid fa-circle-check text-success fs-5"></i>
+            <small class="fw-bold text-muted">Hardhat Ethereum Localnet</small>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <i class="fa-solid fa-circle-check text-success fs-5"></i>
+            <small class="fw-bold text-muted">Zero Tampering</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6">
+        <!-- Cute Interactive Hero Graphic / Card Stack -->
+        <div class="position-relative">
+          <!-- Background decorative shapes -->
+          <div style="position: absolute; width: 350px; height: 350px; background: radial-gradient(circle, #FCE4EC 0%, rgba(234, 226, 255, 0.2) 70%); border-radius: 50%; filter: blur(40px); z-index: 0; top: -40px; right: -20px;"></div>
+
+          <div class="cute-card p-4 position-relative" style="z-index: 1; border-radius: 28px; background: rgba(255, 255, 255, 0.95); box-shadow: 0 20px 50px rgba(160, 140, 200, 0.18);">
+            <div class="d-flex align-items-center justify-content-between mb-3 pb-3 border-bottom">
+              <div class="d-flex align-items-center gap-2">
+                <span class="pulse-dot pulse-dot-green"></span>
+                <span class="fw-bold text-dark">Live Smart Contract Verified</span>
+              </div>
+              <span class="badge badge-cute badge-cute-lavender">REC-2026-B810</span>
+            </div>
+
+            <!-- Cute Medical Illustration & Card Content -->
+            <div class="p-3 mb-3 rounded-4" style="background: linear-gradient(135deg, #FFF0F5 0%, #F5F0FF 100%); border: 1px solid #EAE2FF;">
+              <div class="d-flex align-items-center gap-3 mb-2">
+                <div style="width: 48px; height: 48px; border-radius: 16px; background: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; color: #E91E63; box-shadow: 0 4px 10px rgba(233, 30, 99, 0.15);">
+                  🩸
+                </div>
+                <div>
+                  <h6 class="fw-bold mb-0">Complete Blood Count (CBC) Panel</h6>
+                  <small class="text-muted">Uploaded by Emily Rose (PAT-2026-1001)</small>
+                </div>
+              </div>
+              <div class="d-flex align-items-center justify-content-between mt-3 pt-2 border-top border-white">
+                <span class="badge badge-cute badge-cute-mint">
+                  <i class="fa-solid fa-lock me-1"></i> AES-256-GCM
+                </span>
+                <span class="badge badge-cute badge-cute-blue">
+                  <i class="fa-solid fa-cube me-1"></i> Block #31337
+                </span>
+                <span class="badge badge-cute badge-cute-pink">
+                  <i class="fa-solid fa-check-double me-1"></i> Verified ✓
+                </span>
+              </div>
+            </div>
+
+            <div class="cute-card p-3 bg-light border-0 mb-3">
+              <small class="text-muted fw-bold d-block mb-1">Blockchain SHA-256 Digest:</small>
+              <div class="hash-badge text-truncate w-100" style="font-size: 0.78rem;">
+                8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918
+              </div>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-2">
+                <div style="width: 32px; height: 32px; border-radius: 50%; background: #DDF5E3; display: flex; align-items: center; justify-content: center; color: #1E7E5A; font-size: 0.9rem;">
+                  <i class="fa-solid fa-user-doctor"></i>
+                </div>
+                <small class="fw-bold text-muted">Dr. Sarah Jenkins (Cardiology)</small>
+              </div>
+              <span class="badge badge-cute badge-cute-mint">Access Approved</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- How It Works Section -->
+<section id="how-it-works" class="py-5" style="background: rgba(255, 255, 255, 0.6);">
+  <div class="container py-4">
+    <div class="text-center max-w-700 mx-auto mb-5">
+      <span class="badge badge-cute badge-cute-lavender mb-2 px-3 py-2">Workflow</span>
+      <h2 class="fw-bold display-6 mb-2">How MediChain Works</h2>
+      <p class="text-muted">A privacy-first pipeline where files are encrypted locally, stored securely off-chain, and anchored cryptographically on Ethereum.</p>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-md-3">
+        <div class="cute-card h-100 text-center p-4">
+          <div class="stat-icon mx-auto mb-3" style="background: var(--pastel-pink); color: #D81B60;">
+            <i class="fa-solid fa-file-shield"></i>
+          </div>
+          <h5 class="fw-bold mb-2">1. Upload & Encrypt</h5>
+          <p class="text-muted small mb-0">
+            Files are hashed with SHA-256 and encrypted client/server-side using military-grade <strong>AES-256-GCM</strong>.
+          </p>
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <div class="cute-card h-100 text-center p-4">
+          <div class="stat-icon mx-auto mb-3" style="background: var(--pastel-blue); color: #1976D2;">
+            <i class="fa-solid fa-cubes"></i>
+          </div>
+          <h5 class="fw-bold mb-2">2. Blockchain Anchor</h5>
+          <p class="text-muted small mb-0">
+            The cryptographic hash and metadata are registered on the <strong>Solidity Smart Contract</strong>. No raw medical data touches the chain.
+          </p>
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <div class="cute-card h-100 text-center p-4">
+          <div class="stat-icon mx-auto mb-3" style="background: var(--pastel-lavender); color: #7B1FA2;">
+            <i class="fa-solid fa-key"></i>
+          </div>
+          <h5 class="fw-bold mb-2">3. Patient Access Control</h5>
+          <p class="text-muted small mb-0">
+            Doctors search by Patient ID to request access. Only the patient can approve or revoke access via smart contract calls.
+          </p>
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <div class="cute-card h-100 text-center p-4">
+          <div class="stat-icon mx-auto mb-3" style="background: var(--pastel-mint); color: #2E7D32;">
+            <i class="fa-solid fa-circle-check"></i>
+          </div>
+          <h5 class="fw-bold mb-2">4. Instant Verification</h5>
+          <p class="text-muted small mb-0">
+            Any party can re-hash the document at any time to verify it matches the immutable blockchain register. Tampering is flagged in seconds.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Features Section -->
+<section id="features" class="py-5">
+  <div class="container py-4">
+    <div class="text-center mb-5">
+      <span class="badge badge-cute badge-cute-mint mb-2 px-3 py-2">Capabilities</span>
+      <h2 class="fw-bold display-6 mb-2">Built for Trust, Security & Simplicity</h2>
+      <p class="text-muted">A college-level capstone project engineered with enterprise-grade standards.</p>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-lg-4 col-md-6">
+        <div class="cute-card h-100 p-4">
+          <div class="stat-icon mb-3" style="background: var(--pastel-mint); color: #1E7E5A;">
+            <i class="fa-solid fa-user-lock"></i>
+          </div>
+          <h5 class="fw-bold">Patient Sovereignty</h5>
+          <p class="text-muted small">
+            You own your records. Doctors cannot view or download documents unless you explicitly approve their request. Revoke permissions at any time with a single click.
+          </p>
+        </div>
+      </div>
+
+      <div class="col-lg-4 col-md-6">
+        <div class="cute-card h-100 p-4">
+          <div class="stat-icon mb-3" style="background: var(--pastel-pink); color: #C2185B;">
+            <i class="fa-solid fa-fingerprint"></i>
+          </div>
+          <h5 class="fw-bold">SHA-256 Tamper Detection</h5>
+          <p class="text-muted small">
+            Every document generates a unique 256-bit hash. Even changing a single character or byte results in a completely different hash, immediately flagging forgery.
+          </p>
+        </div>
+      </div>
+
+      <div class="col-lg-4 col-md-6">
+        <div class="cute-card h-100 p-4">
+          <div class="stat-icon mb-3" style="background: var(--pastel-lavender); color: #6A1B9A;">
+            <i class="fa-solid fa-shield-virus"></i>
+          </div>
+          <h5 class="fw-bold">AES-256-GCM Encryption</h5>
+          <p class="text-muted small">
+            Stored files are encrypted at rest with random 96-bit nonces and authenticated tags, ensuring confidential medical scans remain private even if storage is breached.
+          </p>
+        </div>
+      </div>
+
+      <div class="col-lg-4 col-md-6">
+        <div class="cute-card h-100 p-4">
+          <div class="stat-icon mb-3" style="background: var(--pastel-blue); color: #0277BD;">
+            <i class="fa-solid fa-code-commit"></i>
+          </div>
+          <h5 class="fw-bold">Solidity Smart Contracts</h5>
+          <p class="text-muted small">
+            Permission grants, revocations, and record registrations execute on an Ethereum-compatible Hardhat node with auditable transaction hashes.
+          </p>
+        </div>
+      </div>
+
+      <div class="col-lg-4 col-md-6">
+        <div class="cute-card h-100 p-4">
+          <div class="stat-icon mb-3" style="background: var(--pastel-peach); color: #EF6C00;">
+            <i class="fa-solid fa-stethoscope"></i>
+          </div>
+          <h5 class="fw-bold">Doctor Verification Suite</h5>
+          <p class="text-muted small">
+            Authorized physicians can inspect records, review diagnostics, download decrypted files safely, and run verification audits before making clinical decisions.
+          </p>
+        </div>
+      </div>
+
+      <div class="col-lg-4 col-md-6">
+        <div class="cute-card h-100 p-4">
+          <div class="stat-icon mb-3" style="background: var(--pastel-rose); color: #880E4F;">
+            <i class="fa-solid fa-clipboard-check"></i>
+          </div>
+          <h5 class="fw-bold">Complete Audit Logging</h5>
+          <p class="text-muted small">
+            Every login, upload, permission change, and download attempt is logged with IP address and timestamp for hospital compliance and administrative oversight.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Blockchain Architecture Section -->
+<section id="security" class="py-5" style="background: linear-gradient(135deg, rgba(234, 226, 255, 0.4) 0%, rgba(221, 245, 227, 0.4) 100%);">
+  <div class="container py-4">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6">
+        <span class="badge badge-cute badge-cute-lavender mb-2 px-3 py-2">Security Blueprint</span>
+        <h2 class="fw-bold display-6 mb-3">Why MediChain Never Stores Plaintext Health Data on Chain</h2>
+        <p class="text-muted mb-4">
+          Public or private blockchains are immutable by design. Storing raw medical documents or patient PII on a blockchain violates patient privacy laws (HIPAA/GDPR). MediChain implements the industry-standard off-chain hybrid model:
+        </p>
+        
+        <div class="d-flex flex-column gap-3">
+          <div class="d-flex gap-3">
+            <div class="stat-icon" style="background: #FFFFFF; color: #1E7E5A; width: 44px; height: 44px; font-size: 1.2rem;">
+              <i class="fa-solid fa-database"></i>
+            </div>
+            <div>
+              <h6 class="fw-bold mb-1">Encrypted Off-Chain Storage</h6>
+              <p class="text-muted small mb-0">Documents are encrypted with unique AES-256-GCM keys. Only the ciphertext is stored outside the blockchain.</p>
+            </div>
+          </div>
+
+          <div class="d-flex gap-3">
+            <div class="stat-icon" style="background: #FFFFFF; color: #8E7CDE; width: 44px; height: 44px; font-size: 1.2rem;">
+              <i class="fa-solid fa-link"></i>
+            </div>
+            <div>
+              <h6 class="fw-bold mb-1">On-Chain Cryptographic Registry</h6>
+              <p class="text-muted small mb-0">The smart contract records the document SHA-256 digest, record ID, and patient ID, providing an indelible public proof of existence.</p>
+            </div>
+          </div>
+
+          <div class="d-flex gap-3">
+            <div class="stat-icon" style="background: #FFFFFF; color: #E91E63; width: 44px; height: 44px; font-size: 1.2rem;">
+              <i class="fa-solid fa-user-shield"></i>
+            </div>
+            <div>
+              <h6 class="fw-bold mb-1">Smart Contract Permission Guards</h6>
+              <p class="text-muted small mb-0">Doctor access flags reside inside the Solidity state machine. The backend validates both DB and smart contract before releasing any file.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6">
+        <div class="cute-card p-4">
+          <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
+            <i class="fa-solid fa-table-columns text-primary"></i>
+            Data Storage Comparison
+          </h5>
+          <div class="table-responsive">
+            <table class="table table-sm table-borderless align-middle mb-0">
+              <thead class="border-bottom">
+                <tr class="text-muted" style="font-size: 0.8rem;">
+                  <th>DATA ITEM</th>
+                  <th>MYSQL</th>
+                  <th>BLOCKCHAIN</th>
+                </tr>
+              </thead>
+              <tbody style="font-size: 0.88rem;">
+                <tr>
+                  <td class="fw-bold">User Credentials & Profile</td>
+                  <td><span class="badge badge-cute badge-cute-mint">Hashed (Scrypt)</span></td>
+                  <td><span class="badge badge-cute badge-cute-danger">Never Stored</span></td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">Encrypted Document File</td>
+                  <td><span class="badge badge-cute badge-cute-mint">Off-Chain</span></td>
+                  <td><span class="badge badge-cute badge-cute-danger">Never Stored</span></td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">Document SHA-256 Digest</td>
+                  <td><span class="badge badge-cute badge-cute-mint">Indexed</span></td>
+                  <td><span class="badge badge-cute badge-cute-lavender">Immutable On-Chain</span></td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">Doctor Access Flag</td>
+                  <td><span class="badge badge-cute badge-cute-mint">Cached State</span></td>
+                  <td><span class="badge badge-cute badge-cute-lavender">Solidity Mapping</span></td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">Transaction Hashes</td>
+                  <td><span class="badge badge-cute badge-cute-mint">Reference</span></td>
+                  <td><span class="badge badge-cute badge-cute-lavender">Block Receipts</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Call to Action Banner -->
+<section class="py-5 text-center">
+  <div class="container py-4">
+    <div class="cute-card p-5 mx-auto" style="max-width: 800px; background: linear-gradient(135deg, #FFF0F5 0%, #EAE2FF 100%);">
+      <div class="display-5 mb-2">🌸</div>
+      <h2 class="fw-bold mb-3">Ready to Experience True Health Record Security?</h2>
+      <p class="text-muted mb-4 lead" style="font-size: 1.1rem;">
+        Get started right away with demo accounts or register your own patient or doctor identity.
+      </p>
+      <div class="d-flex justify-content-center flex-wrap gap-3">
+        <a href="{{ url_for('auth.login') }}" class="btn btn-cute-primary btn-lg px-4">
+          <i class="fa-solid fa-arrow-right-to-bracket me-2"></i> Launch Application
+        </a>
+        <a href="{{ url_for('auth.register') }}" class="btn btn-cute-light btn-lg px-4">
+          <i class="fa-solid fa-user-plus me-2"></i> Create Free Account
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="py-4 border-top" style="background: #FFFFFF;">
+  <div class="container text-center text-muted small">
+    <div class="d-flex justify-content-center align-items-center gap-2 mb-2">
+      <span class="brand-logo-icon" style="width: 28px; height: 28px; font-size: 0.9rem;">
+        <i class="fa-solid fa-heart-pulse"></i>
+      </span>
+      <strong class="text-dark">MediChain</strong> – Medical Record Management System
+    </div>
+    <p class="mb-1">
+      Developed as a B.Tech Information Science Mini-Project. Built with Python Flask, MySQL, Solidity, Hardhat & Web3.py.
+    </p>
+    <p class="text-muted mb-0">
+      &copy; 2026 MediChain Healthcare Technologies. Academic Demonstration Release.
+    </p>
+  </div>
+</footer>
+{% endblock %}

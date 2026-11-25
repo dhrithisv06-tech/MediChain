@@ -1,0 +1,91 @@
+{% extends "dashboard_layout.html" %}
+
+{% block title %}My Access Requests – MediChain{% endblock %}
+
+{% block header_title %}My Access Requests 📨{% endblock %}
+{% block header_subtitle %}Track the authorization status of access requests sent to patients.{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-between mb-4">
+  <span class="badge badge-cute badge-cute-lavender">{{ requests|length }} Total Requests</span>
+  <a href="{{ url_for('doctor.search_patient') }}" class="btn btn-cute-primary btn-sm">
+    <i class="fa-solid fa-paper-plane me-1"></i> New Request
+  </a>
+</div>
+
+<div class="cute-card p-0">
+  <div class="table-responsive">
+    <table class="table table-cute">
+      <thead>
+        <tr>
+          <th>Patient Name</th>
+          <th>Patient ID</th>
+          <th>Stated Clinical Purpose</th>
+          <th>Requested Date</th>
+          <th>Permission Status</th>
+          <th class="text-end">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if requests %}
+          {% for r in requests %}
+            <tr>
+              <td>
+                <div class="fw-bold">{{ r.patient_name }}</div>
+              </td>
+              <td>
+                <span class="badge badge-cute badge-cute-lavender">{{ r.patient_id }}</span>
+              </td>
+              <td>
+                <small class="text-muted">{{ r.purpose }}</small>
+              </td>
+              <td>
+                <small class="text-muted">{{ r.requested_at.strftime('%Y-%m-%d %H:%M') if r.requested_at else 'Recent' }}</small>
+              </td>
+              <td>
+                {% if r.status == 'approved' %}
+                  <span class="badge badge-cute badge-cute-mint">
+                    <i class="fa-solid fa-circle-check me-1"></i> Approved
+                  </span>
+                {% elif r.status == 'pending' %}
+                  <span class="badge badge-cute badge-cute-peach">
+                    <i class="fa-solid fa-clock me-1"></i> Pending
+                  </span>
+                {% elif r.status == 'rejected' %}
+                  <span class="badge badge-cute badge-cute-danger">
+                    <i class="fa-solid fa-xmark me-1"></i> Rejected
+                  </span>
+                {% elif r.status == 'revoked' %}
+                  <span class="badge badge-cute badge-cute-lavender">
+                    <i class="fa-solid fa-ban me-1"></i> Revoked
+                  </span>
+                {% endif %}
+              </td>
+              <td class="text-end">
+                {% if r.status == 'approved' %}
+                  <a href="{{ url_for('doctor.view_patient_records', patient_id=r.patient_id) }}" class="btn btn-sm btn-cute-primary">
+                    View Records
+                  </a>
+                {% else %}
+                  <span class="text-muted small">-</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td colspan="6" class="text-center py-5 text-muted">
+              <div style="font-size: 2.5rem; opacity: 0.5;">📨</div>
+              <h6 class="fw-bold mt-2">No Requests Sent</h6>
+              <p class="small mb-3">You haven't submitted any patient access requests yet.</p>
+              <a href="{{ url_for('doctor.search_patient') }}" class="btn btn-cute-light btn-sm">
+                <i class="fa-solid fa-magnifying-glass me-1"></i> Search Patient to Request
+              </a>
+            </td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,135 @@
+{% extends "dashboard_layout.html" %}
+
+{% block title %}Medical Record Verification Tool – MediChain{% endblock %}
+
+{% block header_title %}Document Integrity Verification Tool 🛡️{% endblock %}
+{% block header_subtitle %}Inspect and mathematically verify any medical record against the Solidity smart contract on Ethereum.{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="cute-card p-4 p-md-5 mb-4">
+      <div class="d-flex align-items-center gap-3 mb-4 pb-3 border-bottom">
+        <div class="stat-icon" style="background: var(--pastel-pink); color: #E91E63; width: 50px; height: 50px; font-size: 1.3rem;">
+          <i class="fa-solid fa-fingerprint"></i>
+        </div>
+        <div>
+          <h4 class="fw-bold mb-0">Live Cryptographic Audit</h4>
+          <small class="text-muted">Enter a Record ID to fetch the on-chain SHA-256 hash and verify local file integrity</small>
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <label class="form-label-cute" for="verifyRecordId">Target Record ID</label>
+        <div class="input-group">
+          <input type="text" class="form-control form-control-cute" id="verifyRecordId" placeholder="e.g. REC-2026-..." value="{{ preset_record_id or '' }}">
+          <button class="btn btn-cute-primary px-4" type="button" onclick="runLiveAudit(false)">
+            <i class="fa-solid fa-shield-halved me-1"></i> Verify Authenticity
+          </button>
+        </div>
+      </div>
+
+      <div class="d-flex align-items-center justify-content-between p-3 rounded-4 mb-4" style="background: rgba(234, 226, 255, 0.4); border: 1px solid #D3C2FF;">
+        <div>
+          <h6 class="fw-bold mb-0">Examiner Demonstration Mode:</h6>
+          <small class="text-muted">Test how the smart contract flags altered or tampered documents</small>
+        </div>
+        <button class="btn btn-sm btn-cute-danger" type="button" onclick="runLiveAudit(true)">
+          <i class="fa-solid fa-bug me-1"></i> Simulate Tampered Audit
+        </button>
+      </div>
+
+      <!-- Live Audit Results Container -->
+      <div id="auditResultBox" class="d-none">
+        <!-- Rendered by JavaScript -->
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  function runLiveAudit(testTamper) {
+    const recordId = document.getElementById('verifyRecordId').value.trim();
+    if (!recordId) {
+      alert('Please enter a Record ID to verify.');
+      return;
+    }
+
+    const box = document.getElementById('auditResultBox');
+    box.classList.remove('d-none');
+    box.innerHTML = `
+      <div class="text-center py-4">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="mt-2 text-muted fw-bold">Querying Solidity contract for ${recordId}...</p>
+      </div>
+    `;
+
+    fetch(`/api/verify-record/${recordId}${testTamper ? '?tamper=true' : ''}`)
+      .then(res => res.json())
+      .then(data => {
+        if (!data.success) {
+          box.innerHTML = `
+            <div class="alert alert-cute alert-cute-danger">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+              <div>${data.message || 'Record not found on blockchain.'}</div>
+            </div>
+          `;
+          return;
+        }
+
+        const isValid = data.is_valid;
+        box.innerHTML = `
+          <div class="verify-result-card ${isValid ? 'verify-result-success' : 'verify-result-failed'} mb-4">
+            <div class="display-5 mb-2">${isValid ? '✅' : '🚨'}</div>
+            <h3 class="fw-bold ${isValid ? 'text-success' : 'text-danger'} mb-1">
+              ${isValid ? 'DOCUMENT FULLY VERIFIED' : 'INTEGRITY COMPROMISED / TAMPERED'}
+            </h3>
+            <p class="text-muted mb-0">
+              ${isValid ? 'The document bytes match the immutable Ethereum smart contract hash with 100% cryptographic precision.' : 'CRITICAL ALERT: The computed SHA-256 hash does NOT match the registered blockchain hash! Possible tampering or forgery detected.'}
+            </p>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label-cute"><i class="fa-solid fa-cubes text-primary me-1"></i> Blockchain Stored Hash (SHA-256):</label>
+            <div class="hash-badge w-100 p-2">${data.blockchain_hash}</div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label-cute"><i class="fa-solid fa-calculator text-secondary me-1"></i> Newly Computed File Hash (SHA-256):</label>
+            <div class="hash-badge w-100 p-2 ${isValid ? 'text-success' : 'text-danger'}" style="${isValid ? 'background: #EAFAF1; border-color: #A3E2B2;' : 'background: #FDEDEC; border-color: #F5B7B1;'}">
+              ${data.calculated_hash}
+            </div>
+          </div>
+
+          <div class="cute-card p-3 border-0" style="background: rgba(220, 238, 255, 0.4);">
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+              <div>
+                <small class="text-muted fw-bold d-block">Blockchain Smart Contract Tx:</small>
+                <span class="hash-badge" style="font-size: 0.75rem;">${data.blockchain_tx_hash || '0x4fbc...'}</span>
+              </div>
+              <div>
+                <span class="badge badge-cute badge-cute-mint">Block #${data.block_number || 'N/A'}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      })
+      .catch(err => {
+        box.innerHTML = `
+          <div class="alert alert-cute alert-cute-danger">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <div>Error running verification: ${err.message}</div>
+          </div>
+        `;
+      });
+  }
+
+  // Auto run if preset
+  const pre = "{{ preset_record_id or '' }}";
+  if (pre) {
+    runLiveAudit(false);
+  }
+</script>
+{% endblock %}

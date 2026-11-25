@@ -1,0 +1,106 @@
+{% extends "dashboard_layout.html" %}
+
+{% block title %}User Management – MediChain{% endblock %}
+
+{% block header_title %}User Account Management 👥{% endblock %}
+{% block header_subtitle %}View, filter, and manage registered patient and doctor accounts.{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-between mb-4">
+  <div class="d-flex gap-2">
+    <a href="{{ url_for('admin.users') }}" class="btn btn-sm btn-cute-light {% if not role_filter %}active fw-bold{% endif %}">
+      All Users ({{ users|length }})
+    </a>
+    <a href="{{ url_for('admin.users', role='patient') }}" class="btn btn-sm btn-cute-light {% if role_filter == 'patient' %}active fw-bold{% endif %}">
+      Patients
+    </a>
+    <a href="{{ url_for('admin.users', role='doctor') }}" class="btn btn-sm btn-cute-light {% if role_filter == 'doctor' %}active fw-bold{% endif %}">
+      Doctors
+    </a>
+  </div>
+</div>
+
+<div class="cute-card p-0">
+  <div class="table-responsive">
+    <table class="table table-cute">
+      <thead>
+        <tr>
+          <th>User ID</th>
+          <th>Full Name & Email</th>
+          <th>Role</th>
+          <th>Contact</th>
+          <th>Account Status</th>
+          <th>Registered</th>
+          <th class="text-end">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if users %}
+          {% for u in users %}
+            <tr>
+              <td>
+                <span class="badge badge-cute badge-cute-lavender">{{ u.user_id }}</span>
+              </td>
+              <td>
+                <div class="fw-bold">{{ u.full_name }}</div>
+                <small class="text-muted">{{ u.email }}</small>
+              </td>
+              <td>
+                {% if u.role == 'patient' %}
+                  <span class="badge badge-cute badge-cute-pink">
+                    <i class="fa-solid fa-user me-1"></i> Patient
+                  </span>
+                {% elif u.role == 'doctor' %}
+                  <span class="badge badge-cute badge-cute-mint">
+                    <i class="fa-solid fa-user-doctor me-1"></i> Doctor
+                  </span>
+                {% else %}
+                  <span class="badge badge-cute badge-cute-blue">
+                    <i class="fa-solid fa-shield me-1"></i> Admin
+                  </span>
+                {% endif %}
+              </td>
+              <td>
+                <small class="text-muted">{{ u.phone or 'N/A' }}</small>
+              </td>
+              <td>
+                {% if u.is_active %}
+                  <span class="badge badge-cute badge-cute-mint">
+                    <i class="fa-solid fa-circle-check me-1"></i> Active
+                  </span>
+                {% else %}
+                  <span class="badge badge-cute badge-cute-danger">
+                    <i class="fa-solid fa-circle-xmark me-1"></i> Deactivated
+                  </span>
+                {% endif %}
+              </td>
+              <td>
+                <small class="text-muted">{{ u.created_at.strftime('%Y-%m-%d') if u.created_at else 'Recent' }}</small>
+              </td>
+              <td class="text-end">
+                {% if u.role != 'admin' %}
+                  <form method="POST" action="{{ url_for('admin.toggle_user_status', user_id=u.user_id) }}" class="d-inline">
+                    <button type="submit" class="btn btn-sm btn-cute-light {% if u.is_active %}text-danger{% else %}text-success{% endif %}" onclick="return confirm('Change status for {{ u.full_name }}?')">
+                      {% if u.is_active %}
+                        <i class="fa-solid fa-user-slash me-1"></i> Deactivate
+                      {% else %}
+                        <i class="fa-solid fa-user-check me-1"></i> Activate
+                      {% endif %}
+                    </button>
+                  </form>
+                {% else %}
+                  <span class="badge badge-cute badge-cute-lavender">System Owner</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td colspan="7" class="text-center py-5 text-muted small">No users found.</td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

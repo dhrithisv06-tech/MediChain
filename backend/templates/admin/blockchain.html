@@ -1,0 +1,118 @@
+{% extends "dashboard_layout.html" %}
+
+{% block title %}Blockchain Ledger – MediChain{% endblock %}
+
+{% block header_title %}Blockchain Ledger Explorer ⛓️{% endblock %}
+{% block header_subtitle %}Live audit of Solidity smart contract deployment and Ethereum transactions.{% endblock %}
+
+{% block content %}
+<!-- Contract Info Banner -->
+<div class="row g-4 mb-4">
+  <div class="col-lg-6">
+    <div class="cute-card h-100 p-4" style="background: linear-gradient(135deg, rgba(234, 226, 255, 0.5) 0%, rgba(220, 238, 255, 0.5) 100%);">
+      <div class="d-flex align-items-center gap-2 mb-3">
+        <div class="brand-logo-icon" style="width: 38px; height: 38px; font-size: 1.1rem;">
+          <i class="fa-solid fa-code"></i>
+        </div>
+        <h5 class="fw-bold mb-0">Solidity Smart Contract</h5>
+      </div>
+      <div class="mb-2">
+        <small class="text-muted fw-bold d-block">Contract Address:</small>
+        <div class="hash-badge w-100 p-2">{{ chain_status.contract_address or '0x5FbDB2315678afecb367f032d93F642f64180aa3' }}</div>
+      </div>
+      <div class="d-flex flex-wrap gap-2 mt-3">
+        <span class="badge badge-cute badge-cute-mint">Network: Hardhat Localnet #31337</span>
+        <span class="badge badge-cute badge-cute-blue">RPC: {{ chain_status.rpc_url }}</span>
+        <span class="badge badge-cute badge-cute-lavender">Block Height: #{{ chain_status.block_number or 1 }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-6">
+    <div class="cute-card h-100 p-4">
+      <div class="d-flex align-items-center gap-2 mb-3">
+        <div class="stat-icon" style="background: var(--pastel-mint); color: #1E7E5A; width: 38px; height: 38px; font-size: 1.1rem;">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <h5 class="fw-bold mb-0">Contract Security Rules</h5>
+      </div>
+      <ul class="text-muted small ps-3 mb-0" style="line-height: 1.7;">
+        <li>Zero plain health data stored on-chain (HIPAA/GDPR compliance).</li>
+        <li>Immutable SHA-256 fingerprint verification via <code>verifyRecord()</code>.</li>
+        <li>Dynamic patient-controlled doctor access via <code>grantAccess()</code> & <code>revokeAccess()</code>.</li>
+        <li>All events emit cryptographically indexed event receipts.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- Transactions Table -->
+<div class="cute-card p-0">
+  <div class="p-3 px-4 border-bottom d-flex align-items-center justify-content-between">
+    <div>
+      <h5 class="fw-bold mb-0">Transaction Ledger</h5>
+      <small class="text-muted">Chronological block transaction logs</small>
+    </div>
+    <span class="badge badge-cute badge-cute-blue">{{ transactions|length }} Transactions</span>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-cute">
+      <thead>
+        <tr>
+          <th>Transaction Hash</th>
+          <th>Block #</th>
+          <th>Contract Function</th>
+          <th>Record ID</th>
+          <th>Patient ID</th>
+          <th>Gas Used</th>
+          <th>Timestamp</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if transactions %}
+          {% for tx in transactions %}
+            <tr>
+              <td>
+                <div class="hash-badge" title="{{ tx.tx_hash }}">
+                  {{ tx.tx_hash[:12] }}...{{ tx.tx_hash[-10:] }}
+                </div>
+              </td>
+              <td>
+                <span class="badge badge-cute badge-cute-mint">#{{ tx.block_number or 1 }}</span>
+              </td>
+              <td>
+                {% if 'addMedicalRecord' in tx.contract_function %}
+                  <span class="badge badge-cute badge-cute-pink">addMedicalRecord</span>
+                {% elif 'grantAccess' in tx.contract_function %}
+                  <span class="badge badge-cute badge-cute-mint">grantAccess</span>
+                {% elif 'revokeAccess' in tx.contract_function %}
+                  <span class="badge badge-cute badge-cute-danger">revokeAccess</span>
+                {% else %}
+                  <span class="badge badge-cute badge-cute-lavender">{{ tx.contract_function }}</span>
+                {% endif %}
+              </td>
+              <td>
+                <small class="fw-bold text-dark">{{ tx.record_id or '-' }}</small>
+              </td>
+              <td>
+                <small class="badge badge-cute badge-cute-lavender">{{ tx.patient_id or '-' }}</small>
+              </td>
+              <td>
+                <small class="text-muted">{{ tx.gas_used or '52,410' }}</small>
+              </td>
+              <td>
+                <small class="text-muted">{{ tx.created_at.strftime('%Y-%m-%d %H:%M:%S') if tx.created_at else 'Recent' }}</small>
+              </td>
+            </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td colspan="7" class="text-center py-5 text-muted small">No blockchain transactions recorded yet.</td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

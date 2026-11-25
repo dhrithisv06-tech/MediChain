@@ -1,0 +1,285 @@
+{% extends "dashboard_layout.html" %}
+
+{% block title %}Admin Dashboard – MediChain{% endblock %}
+
+{% block header_title %}System Administration 🛡️{% endblock %}
+{% block header_subtitle %}Real-time system health, cryptographic integrity metrics, and compliance audit trail.{% endblock %}
+
+{% block content %}
+<!-- 4 Main Admin Stat Cards -->
+<div class="row g-4 mb-4">
+  <div class="col-xl-3 col-sm-6">
+    <div class="stat-card stat-card-pink">
+      <div class="stat-icon" style="color: #E91E63;">
+        <i class="fa-solid fa-users"></i>
+      </div>
+      <div>
+        <div class="stat-val">{{ stats.total_patients }}</div>
+        <div class="stat-label">Total Patients</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xl-3 col-sm-6">
+    <div class="stat-card stat-card-mint">
+      <div class="stat-icon" style="color: #2E7D32;">
+        <i class="fa-solid fa-user-doctor"></i>
+      </div>
+      <div>
+        <div class="stat-val">{{ stats.total_doctors }}</div>
+        <div class="stat-label">Total Doctors</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xl-3 col-sm-6">
+    <div class="stat-card stat-card-lavender">
+      <div class="stat-icon" style="color: #7B1FA2;">
+        <i class="fa-solid fa-file-waveform"></i>
+      </div>
+      <div>
+        <div class="stat-val">{{ stats.total_records }}</div>
+        <div class="stat-label">Total Medical Records</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xl-3 col-sm-6">
+    <div class="stat-card stat-card-blue">
+      <div class="stat-icon" style="color: #1976D2;">
+        <i class="fa-solid fa-cubes"></i>
+      </div>
+      <div>
+        <div class="stat-val">{{ stats.total_transactions }}</div>
+        <div class="stat-label">Blockchain Transactions</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Charts Row with Chart.js -->
+<div class="row g-4 mb-4">
+  <div class="col-lg-7">
+    <div class="cute-card h-100 p-4">
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <h5 class="fw-bold mb-0">Record Categories Distribution</h5>
+        <span class="badge badge-cute badge-cute-lavender">Analytics</span>
+      </div>
+      <div style="height: 260px; position: relative;">
+        <canvas id="categoryChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-5">
+    <div class="cute-card h-100 p-4">
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <h5 class="fw-bold mb-0">User Role Composition</h5>
+        <span class="badge badge-cute badge-cute-mint">Network Nodes</span>
+      </div>
+      <div style="height: 260px; position: relative;">
+        <canvas id="roleChart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Recent System Audit & Blockchain Activity -->
+<div class="row g-4">
+  <div class="col-lg-6">
+    <div class="cute-card h-100 p-0">
+      <div class="p-3 px-4 border-bottom d-flex align-items-center justify-content-between">
+        <div>
+          <h5 class="fw-bold mb-0">Recent System Activity</h5>
+          <small class="text-muted">Security and compliance audit trail</small>
+        </div>
+        <a href="{{ url_for('admin.audit_logs') }}" class="btn btn-sm btn-cute-light">View Logs</a>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-cute">
+          <thead>
+            <tr>
+              <th>Action</th>
+              <th>User</th>
+              <th>IP Address</th>
+              <th>Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if recent_logs %}
+              {% for log in recent_logs %}
+                <tr>
+                  <td>
+                    {% if 'LOGIN' in log.action %}
+                      <span class="badge badge-cute badge-cute-mint">{{ log.action }}</span>
+                    {% elif 'UPLOAD' in log.action %}
+                      <span class="badge badge-cute badge-cute-blue">{{ log.action }}</span>
+                    {% elif 'APPROVE' in log.action %}
+                      <span class="badge badge-cute badge-cute-lavender">{{ log.action }}</span>
+                    {% elif 'REVOKE' in log.action %}
+                      <span class="badge badge-cute badge-cute-danger">{{ log.action }}</span>
+                    {% else %}
+                      <span class="badge badge-cute badge-cute-peach">{{ log.action }}</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    <small class="fw-bold">{{ log.user_id or 'Guest' }}</small>
+                    <small class="text-muted d-block" style="font-size: 0.72rem;">{{ log.user_role or '' }}</small>
+                  </td>
+                  <td>
+                    <small class="text-muted font-monospace">{{ log.ip_address or '127.0.0.1' }}</small>
+                  </td>
+                  <td>
+                    <small class="text-muted">{{ log.created_at.strftime('%H:%M:%S') if log.created_at else 'Recent' }}</small>
+                  </td>
+                </tr>
+              {% endfor %}
+            {% else %}
+              <tr>
+                <td colspan="4" class="text-center py-4 text-muted small">No audit logs recorded yet.</td>
+              </tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-6">
+    <div class="cute-card h-100 p-0">
+      <div class="p-3 px-4 border-bottom d-flex align-items-center justify-content-between">
+        <div>
+          <h5 class="fw-bold mb-0">Recent Blockchain Transactions</h5>
+          <small class="text-muted">Smart contract events</small>
+        </div>
+        <a href="{{ url_for('admin.blockchain') }}" class="btn btn-sm btn-cute-light">Ledger</a>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-cute">
+          <thead>
+            <tr>
+              <th>Tx Hash</th>
+              <th>Function</th>
+              <th>Block</th>
+              <th>Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if recent_txs %}
+              {% for tx in recent_txs %}
+                <tr>
+                  <td>
+                    <div class="hash-badge" title="{{ tx.tx_hash }}">
+                      {{ tx.tx_hash[:10] }}...{{ tx.tx_hash[-8:] }}
+                    </div>
+                  </td>
+                  <td>
+                    <span class="badge badge-cute badge-cute-lavender" style="font-size: 0.75rem;">
+                      {{ tx.contract_function }}
+                    </span>
+                  </td>
+                  <td>
+                    <span class="badge badge-cute badge-cute-mint">#{{ tx.block_number or 1 }}</span>
+                  </td>
+                  <td>
+                    <small class="text-muted">{{ tx.created_at.strftime('%H:%M') if tx.created_at else 'Recent' }}</small>
+                  </td>
+                </tr>
+              {% endfor %}
+            {% else %}
+              <tr>
+                <td colspan="4" class="text-center py-4 text-muted small">No blockchain transactions yet.</td>
+              </tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  // Category Distribution Chart
+  const categoryData = {{ category_counts|tojson }};
+  const catLabels = Object.keys(categoryData).length ? Object.keys(categoryData) : ['Blood Test', 'X-Ray', 'MRI Scan', 'Prescription', 'General'];
+  const catValues = Object.keys(categoryData).length ? Object.values(categoryData) : [4, 2, 1, 3, 2];
+
+  const ctxCat = document.getElementById('categoryChart').getContext('2d');
+  new Chart(ctxCat, {
+    type: 'bar',
+    data: {
+      labels: catLabels,
+      datasets: [{
+        label: 'Medical Records',
+        data: catValues,
+        backgroundColor: [
+          'rgba(255, 182, 193, 0.75)',
+          'rgba(176, 224, 230, 0.75)',
+          'rgba(230, 230, 250, 0.75)',
+          'rgba(221, 245, 227, 0.75)',
+          'rgba(255, 232, 214, 0.75)'
+        ],
+        borderColor: [
+          '#F48FB1',
+          '#81D4FA',
+          '#CE93D8',
+          '#81C784',
+          '#FFB74D'
+        ],
+        borderWidth: 1.5,
+        borderRadius: 10
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: { stepSize: 1 }
+        }
+      }
+    }
+  });
+
+  // User Role Doughnut Chart
+  const ctxRole = document.getElementById('roleChart').getContext('2d');
+  new Chart(ctxRole, {
+    type: 'doughnut',
+    data: {
+      labels: ['Patients', 'Doctors', 'Admins'],
+      datasets: [{
+        data: [{{ stats.total_patients }}, {{ stats.total_doctors }}, 1],
+        backgroundColor: [
+          '#FCE4EC',
+          '#DDF5E3',
+          '#EAE2FF'
+        ],
+        borderColor: [
+          '#F48FB1',
+          '#81C784',
+          '#BA68C8'
+        ],
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom' }
+      },
+      cutout: '70%'
+    }
+  });
+</script>
+{% endblock %}

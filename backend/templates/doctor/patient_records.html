@@ -1,0 +1,133 @@
+{% extends "dashboard_layout.html" %}
+
+{% block title %}{{ patient.full_name }}'s Records – MediChain{% endblock %}
+
+{% block header_title %}Patient Records: {{ patient.full_name }} 📂{% endblock %}
+{% block header_subtitle %}Viewing authorized diagnostic files. Decryption and integrity checks enforced in real time.{% endblock %}
+
+{% block content %}
+<!-- Back Navigation -->
+<div class="mb-3">
+  <a href="{{ url_for('doctor.authorized_patients') }}" class="fw-semibold text-muted small">
+    <i class="fa-solid fa-arrow-left me-1"></i> Back to Authorized Patients
+  </a>
+</div>
+
+<!-- Patient Summary Banner -->
+<div class="cute-card mb-4 p-4" style="background: linear-gradient(135deg, rgba(252, 228, 236, 0.5) 0%, rgba(220, 238, 255, 0.5) 100%);">
+  <div class="row align-items-center">
+    <div class="col-md-7">
+      <div class="d-flex align-items-center gap-3">
+        <div class="user-avatar" style="width: 52px; height: 52px; font-size: 1.4rem; background: #FFFFFF; color: #E91E63;">
+          {{ patient.full_name[:1] }}
+        </div>
+        <div>
+          <h4 class="fw-bold mb-0">{{ patient.full_name }}</h4>
+          <div class="d-flex align-items-center gap-2 mt-1">
+            <span class="badge badge-cute badge-cute-lavender">{{ patient.patient_id }}</span>
+            <span class="badge badge-cute badge-cute-mint">Blockchain Verified Access</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-5 mt-3 mt-md-0">
+      <div class="row g-2 text-md-end">
+        <div class="col-6">
+          <small class="text-muted fw-bold d-block">Blood Group</small>
+          <span class="badge badge-cute badge-cute-peach fs-6">{{ patient.blood_group or 'Unknown' }}</span>
+        </div>
+        <div class="col-6">
+          <small class="text-muted fw-bold d-block">Known Allergies</small>
+          <span class="text-danger fw-bold small">{{ patient.allergies or 'None reported' }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Records List -->
+<div class="cute-card p-0">
+  <div class="p-3 px-4 border-bottom d-flex align-items-center justify-content-between">
+    <div>
+      <h5 class="fw-bold mb-0">Accessible Clinical Records</h5>
+      <small class="text-muted">Decrypted automatically upon verified request</small>
+    </div>
+    <span class="badge badge-cute badge-cute-blue">{{ records|length }} Available</span>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-cute">
+      <thead>
+        <tr>
+          <th>Record Name</th>
+          <th>Category</th>
+          <th>SHA-256 Registered Hash</th>
+          <th>Uploaded Date</th>
+          <th class="text-end">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if records %}
+          {% for rec in records %}
+            <tr>
+              <td>
+                <div class="fw-bold text-dark">{{ rec.title }}</div>
+                <div class="d-flex align-items-center gap-2 mt-1">
+                  <span class="badge badge-cute badge-cute-lavender">{{ rec.record_id }}</span>
+                  <small class="text-muted">{{ rec.original_filename }} ({{ (rec.file_size / 1024)|round(1) }} KB)</small>
+                </div>
+                {% if rec.description %}
+                  <small class="text-muted d-block mt-1 fst-italic">{{ rec.description }}</small>
+                {% endif %}
+              </td>
+              <td>
+                {% if rec.category == 'Blood Test' %}
+                  <span class="badge badge-cute badge-cute-peach">{{ rec.category }}</span>
+                {% elif rec.category == 'X-Ray' %}
+                  <span class="badge badge-cute badge-cute-blue">{{ rec.category }}</span>
+                {% elif rec.category == 'MRI Scan' %}
+                  <span class="badge badge-cute badge-cute-lavender">{{ rec.category }}</span>
+                {% elif rec.category == 'Prescription' %}
+                  <span class="badge badge-cute badge-cute-pink">{{ rec.category }}</span>
+                {% else %}
+                  <span class="badge badge-cute badge-cute-mint">{{ rec.category }}</span>
+                {% endif %}
+              </td>
+              <td>
+                <div class="hash-badge" title="{{ rec.file_hash }}" style="max-width: 170px;">
+                  {{ rec.file_hash[:10] }}...{{ rec.file_hash[-8:] }}
+                </div>
+              </td>
+              <td>
+                <small class="text-muted">{{ rec.created_at.strftime('%Y-%m-%d') if rec.created_at else 'Recent' }}</small>
+              </td>
+              <td class="text-end">
+                <div class="d-flex align-items-center justify-content-end gap-1">
+                  <button class="btn btn-sm btn-cute-light" title="Verify Integrity" onclick="openVerifyModal('{{ rec.record_id }}')">
+                    <i class="fa-solid fa-shield-halved text-primary me-1"></i> Verify
+                  </button>
+                  <a href="{{ url_for('doctor.download_record', record_id=rec.record_id) }}" class="btn btn-sm btn-cute-primary" title="Download Decrypted Record">
+                    <i class="fa-solid fa-download me-1"></i> Download
+                  </a>
+                  <button class="btn btn-sm btn-cute-light text-danger" title="Simulate Tampered Check" onclick="openVerifyModal('{{ rec.record_id }}', true)">
+                    <i class="fa-solid fa-bug"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td colspan="5" class="text-center py-5 text-muted">
+              <div style="font-size: 2.5rem; opacity: 0.5;">📁</div>
+              <h6 class="fw-bold mt-2">No Records Found for this Patient</h6>
+              <p class="small">The patient has not uploaded any medical records yet.</p>
+            </td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

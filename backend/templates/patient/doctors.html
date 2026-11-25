@@ -1,0 +1,99 @@
+{% extends "dashboard_layout.html" %}
+
+{% block title %}Doctor Access Management – MediChain{% endblock %}
+
+{% block header_title %}Doctor Access Permissions 🩺{% endblock %}
+{% block header_subtitle %}Manage which medical professionals are authorized on the blockchain to inspect and download your records.{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+  <!-- Left Column: Authorized Doctors List -->
+  <div class="col-lg-8">
+    <div class="cute-card p-4">
+      <div class="d-flex align-items-center justify-content-between mb-4 pb-2 border-bottom">
+        <div>
+          <h5 class="fw-bold mb-0">Authorized Doctors</h5>
+          <small class="text-muted">Physicians granted on-chain permission to view your diagnostic files</small>
+        </div>
+        <span class="badge badge-cute badge-cute-mint">{{ doctors|length }} Active</span>
+      </div>
+
+      {% if doctors %}
+        <div class="d-flex flex-column gap-3">
+          {% for doc in doctors %}
+            <div class="p-3 rounded-4" style="background: rgba(221, 245, 227, 0.35); border: 1px solid #BCE7C6;">
+              <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                <div class="d-flex align-items-center gap-3">
+                  <div style="width: 44px; height: 44px; border-radius: 16px; background: #FFFFFF; display: flex; align-items: center; justify-content: center; color: #1E7E5A; font-size: 1.2rem; box-shadow: 0 4px 10px rgba(30, 126, 90, 0.15);">
+                    <i class="fa-solid fa-user-doctor"></i>
+                  </div>
+                  <div>
+                    <h6 class="fw-bold mb-0">{{ doc.full_name }}</h6>
+                    <small class="text-muted">
+                      {{ doc.specialization }} &bull; {{ doc.hospital }} &bull; License: <strong>{{ doc.license_number }}</strong>
+                    </small>
+                    <div class="mt-1">
+                      <span class="badge badge-cute badge-cute-lavender" style="font-size: 0.72rem;">{{ doc.doctor_id }}</span>
+                      <small class="text-muted ms-2">Granted: {{ doc.granted_at.strftime('%b %d, %Y') if doc.granted_at else 'Recent' }}</small>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="d-flex align-items-center gap-2">
+                  <form method="POST" action="{{ url_for('patient.revoke_doctor_access', doctor_id=doc.doctor_id) }}">
+                    <button type="submit" class="btn btn-cute-danger btn-sm" onclick="return confirm('Are you sure you want to revoke blockchain access for {{ doc.full_name }}?')">
+                      <i class="fa-solid fa-ban me-1"></i> Revoke Access
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="text-center py-5">
+          <div style="font-size: 3rem; opacity: 0.5;">🔒</div>
+          <h6 class="text-muted fw-bold mt-2">No Doctors Currently Authorized</h6>
+          <p class="text-muted small mb-0">Your medical records are 100% private. Only you can view or download them.</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Right Column: Grant Direct Access Form -->
+  <div class="col-lg-4">
+    <div class="cute-card p-4">
+      <div class="d-flex align-items-center gap-2 mb-3">
+        <div class="stat-icon" style="background: var(--pastel-pink); color: #E91E63; width: 40px; height: 40px; font-size: 1.1rem;">
+          <i class="fa-solid fa-user-plus"></i>
+        </div>
+        <h5 class="fw-bold mb-0">Grant Direct Access</h5>
+      </div>
+      <p class="text-muted small mb-3">
+        Enter the Doctor ID provided by your physician to authorize them immediately on the Solidity smart contract.
+      </p>
+
+      <form method="POST" action="{{ url_for('patient.grant_direct_access') }}">
+        <div class="mb-3">
+          <label class="form-label-cute" for="doctor_id">Doctor Identifier</label>
+          <input type="text" class="form-control form-control-cute" id="doctor_id" name="doctor_id" placeholder="e.g. DOC-2026-2001" required>
+        </div>
+
+        <button type="submit" class="btn btn-cute-primary w-100 py-2">
+          <i class="fa-solid fa-key me-1"></i> Authorize on Blockchain
+        </button>
+      </form>
+
+      <!-- Quick hint -->
+      <div class="mt-4 p-3 rounded-4 bg-light">
+        <small class="fw-bold text-muted d-block mb-1">
+          <i class="fa-solid fa-lightbulb text-warning me-1"></i> Quick Viva Test Tip:
+        </small>
+        <small class="text-muted">
+          Use the demo doctor ID <code>DOC-2026-2001</code> (Dr. Sarah Jenkins) to grant immediate access.
+        </small>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

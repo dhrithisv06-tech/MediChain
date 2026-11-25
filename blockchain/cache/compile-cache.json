@@ -1,0 +1,29 @@
+{
+  "/Users/deekshitha/Desktop/MediChain/blockchain/contracts/MedicalRecord.sol": {
+    "jobHash": "solc-0_8_20-41eb7c1f7e048eb6f3b298ff68bb8b87f798bc26",
+    "isolated": false,
+    "compilerType": "solc",
+    "artifactPaths": [
+      "/Users/deekshitha/Desktop/MediChain/blockchain/artifacts/contracts/MedicalRecord.sol/MedicalRecord.json"
+    ],
+    "buildInfoPath": "/Users/deekshitha/Desktop/MediChain/blockchain/artifacts/build-info/solc-0_8_20-41eb7c1f7e048eb6f3b298ff68bb8b87f798bc26.json",
+    "buildInfoOutputPath": "/Users/deekshitha/Desktop/MediChain/blockchain/artifacts/build-info/solc-0_8_20-41eb7c1f7e048eb6f3b298ff68bb8b87f798bc26.output.json",
+    "typeFilePath": "/Users/deekshitha/Desktop/MediChain/blockchain/artifacts/contracts/MedicalRecord.sol/artifacts.d.ts",
+    "wasm": false,
+    "artifactsDirectory": "/Users/deekshitha/Desktop/MediChain/blockchain/artifacts",
+    "emitsTypeDeclarations": true
+  },
+  "/Users/deekshitha/Desktop/MediChain/blockchain/test/MedicalRecord.t.sol": {
+    "jobHash": "solc-0_8_20-c6130af1578ee9962b923c2d29db09abd81bb703",
+    "isolated": false,
+    "compilerType": "solc",
+    "artifactPaths": [
+      "/Users/deekshitha/Desktop/MediChain/blockchain/artifacts/test/MedicalRecord.t.sol/MedicalRecordTest.json"
+    ],
+    "buildInfoPath": "/Users/deekshitha/Desktop/MediChain/blockchain/artifacts/build-info/solc-0_8_20-c6130af1578ee9962b923c2d29db09abd81bb703.json",
+    "buildInfoOutputPath": "/Users/deekshitha/Desktop/MediChain/blockchain/artifacts/build-info/solc-0_8_20-c6130af1578ee9962b923c2d29db09abd81bb703.output.json",
+    "wasm": false,
+    "artifactsDirectory": "/Users/deekshitha/Desktop/MediChain/blockchain/artifacts",
+    "emitsTypeDeclarations": false
+  }
+}

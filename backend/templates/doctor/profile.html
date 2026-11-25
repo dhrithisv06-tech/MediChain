@@ -1,0 +1,74 @@
+{% extends "dashboard_layout.html" %}
+
+{% block title %}Doctor Profile – MediChain{% endblock %}
+
+{% block header_title %}Doctor Profile 🩺{% endblock %}
+{% block header_subtitle %}Manage your medical license details, clinical specialization, and hospital affiliation.{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-9">
+    <div class="cute-card p-4 p-md-5">
+      <div class="d-flex align-items-center gap-3 mb-4 pb-3 border-bottom">
+        <div class="user-avatar" style="width: 58px; height: 58px; font-size: 1.5rem; background: var(--pastel-mint); color: #1E7E5A;">
+          {{ current_user.full_name[:1] }}
+        </div>
+        <div>
+          <h4 class="fw-bold mb-0">{{ current_user.full_name }}</h4>
+          <span class="badge badge-cute badge-cute-lavender mt-1">Doctor ID: {{ current_user.user_id }}</span>
+        </div>
+      </div>
+
+      <form method="POST" action="{{ url_for('doctor.profile') }}">
+        <div class="row g-3 mb-4">
+          <div class="col-md-6">
+            <label class="form-label-cute" for="full_name">Full Name (with credentials)</label>
+            <input type="text" class="form-control form-control-cute" id="full_name" name="full_name" value="{{ current_user.full_name }}" required>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label-cute" for="email">Email Address</label>
+            <input type="email" class="form-control form-control-cute bg-light" id="email" value="{{ current_user.email }}" readonly>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label-cute" for="phone">Phone Number</label>
+            <input type="text" class="form-control form-control-cute" id="phone" name="phone" value="{{ current_user.phone or '' }}" required>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label-cute" for="specialization">Medical Specialization</label>
+            <input type="text" class="form-control form-control-cute" id="specialization" name="specialization" value="{{ doctor_profile.specialization if doctor_profile else '' }}" required>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label-cute" for="license_number">Medical License Number</label>
+            <input type="text" class="form-control form-control-cute" id="license_number" name="license_number" value="{{ doctor_profile.license_number if doctor_profile else '' }}" required>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label-cute" for="hospital">Hospital / Clinic Affiliation</label>
+            <input type="text" class="form-control form-control-cute" id="hospital" name="hospital" value="{{ doctor_profile.hospital if doctor_profile else '' }}" required>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label-cute" for="years_experience">Years of Experience</label>
+            <input type="number" class="form-control form-control-cute" id="years_experience" name="years_experience" value="{{ doctor_profile.years_experience if doctor_profile else 5 }}" min="0" max="60">
+          </div>
+
+          <div class="col-md-12">
+            <label class="form-label-cute" for="bio">Professional Bio & Credentials</label>
+            <textarea class="form-control form-control-cute" id="bio" name="bio" rows="3">{{ doctor_profile.bio if doctor_profile else '' }}</textarea>
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+          <button type="submit" class="btn btn-cute-primary px-4">
+            <i class="fa-solid fa-floppy-disk me-1"></i> Save Changes
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

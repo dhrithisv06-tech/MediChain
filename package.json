@@ -1,0 +1,34 @@
+{
+  "name": "medichain",
+  "version": "1.0.0",
+  "description": "MediChain – Blockchain-Based Medical Record Management System with Cute Pastel Healthcare Aesthetic",
+  "main": "run.py",
+  "type": "module",
+  "scripts": {
+    "chain:compile": "cd blockchain && npx hardhat compile",
+    "chain:test": "cd blockchain && npx hardhat test",
+    "chain:node": "cd blockchain && npx hardhat node",
+    "chain:deploy": "cd blockchain && node scripts/deploy.js",
+    "start": "python3 run.py",
+    "test:python": "pytest tests/ -v"
+  },
+  "keywords": [
+    "blockchain",
+    "healthcare",
+    "medical-records",
+    "ethereum",
+    "hardhat",
+    "flask",
+    "solidity",
+    "cryptography"
+  ],
+  "author": "MediChain Team",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "@nomicfoundation/hardhat-ethers": "^3.0.8",
+    "chai": "^5.2.0",
+    "ethers": "^6.13.5",
+    "hardhat": "^3.21.2"
+  }
+}

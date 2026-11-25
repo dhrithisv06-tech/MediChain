@@ -1,0 +1,71 @@
+{% extends "dashboard_layout.html" %}
+
+{% block title %}Authorized Patients – MediChain{% endblock %}
+
+{% block header_title %}Authorized Patients 👥{% endblock %}
+{% block header_subtitle %}List of patients who have active on-chain permission granted to your doctor account.{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-between mb-4">
+  <span class="badge badge-cute badge-cute-mint">{{ patients|length }} Active Patients</span>
+  <a href="{{ url_for('doctor.search_patient') }}" class="btn btn-cute-primary btn-sm">
+    <i class="fa-solid fa-magnifying-glass me-1"></i> Search New Patient
+  </a>
+</div>
+
+<div class="cute-card p-0">
+  <div class="table-responsive">
+    <table class="table table-cute">
+      <thead>
+        <tr>
+          <th>Patient Details</th>
+          <th>Blood Group</th>
+          <th>Emergency Contact</th>
+          <th>Access Granted</th>
+          <th class="text-end">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if patients %}
+          {% for p in patients %}
+            <tr>
+              <td>
+                <div class="fw-bold text-dark">{{ p.full_name }}</div>
+                <div class="d-flex align-items-center gap-2 mt-1">
+                  <span class="badge badge-cute badge-cute-lavender">{{ p.patient_id }}</span>
+                  <small class="text-muted">{{ p.phone or 'No phone' }}</small>
+                </div>
+              </td>
+              <td>
+                <span class="badge badge-cute badge-cute-peach">{{ p.blood_group or 'Unknown' }}</span>
+              </td>
+              <td>
+                <small class="text-muted">{{ p.emergency_contact or 'None' }}</small>
+              </td>
+              <td>
+                <small class="text-muted">{{ p.granted_at.strftime('%Y-%m-%d') if p.granted_at else 'Active' }}</small>
+              </td>
+              <td class="text-end">
+                <a href="{{ url_for('doctor.view_patient_records', patient_id=p.patient_id) }}" class="btn btn-cute-primary btn-sm">
+                  <i class="fa-solid fa-file-medical me-1"></i> Access Records
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td colspan="5" class="text-center py-5 text-muted">
+              <div style="font-size: 2.5rem; opacity: 0.5;">📋</div>
+              <h6 class="fw-bold mt-2">No Authorized Patients Yet</h6>
+              <p class="small mb-3">You do not have active permissions for any patient records yet.</p>
+              <a href="{{ url_for('doctor.search_patient') }}" class="btn btn-cute-light btn-sm">
+                <i class="fa-solid fa-magnifying-glass me-1"></i> Search and Request Access
+              </a>
+            </td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,176 @@
+{% extends "dashboard_layout.html" %}
+
+{% block title %}Doctor Dashboard – MediChain{% endblock %}
+
+{% block header_title %}Dr. {{ current_user.full_name.replace('Dr. ', '') }} 🩺{% endblock %}
+{% block header_subtitle %}Decentralized Clinical Consultation & Diagnostic Verification Desk{% endblock %}
+
+{% block content %}
+<!-- Welcome Card -->
+<div class="cute-card mb-4 p-4 position-relative overflow-hidden" style="background: linear-gradient(135deg, rgba(221, 245, 227, 0.7) 0%, rgba(220, 238, 255, 0.7) 100%); border: 1px solid #BCE7C6;">
+  <div class="row align-items-center">
+    <div class="col-md-8">
+      <span class="badge badge-cute badge-cute-mint mb-2">Doctor Clinical Hub</span>
+      <h2 class="fw-bold mb-1">Welcome, {{ current_user.full_name }}! 🩺</h2>
+      <p class="text-muted mb-3" style="font-size: 1.05rem;">
+        {{ doctor_profile.specialization }} &bull; {{ doctor_profile.hospital }} (License: {{ doctor_profile.license_number }})
+      </p>
+      <div class="d-flex flex-wrap gap-2">
+        <a href="{{ url_for('doctor.search_patient') }}" class="btn btn-cute-primary btn-sm">
+          <i class="fa-solid fa-magnifying-glass me-1"></i> Search Patient ID
+        </a>
+        <a href="{{ url_for('doctor.authorized_patients') }}" class="btn btn-cute-secondary btn-sm">
+          <i class="fa-solid fa-users-medical me-1"></i> View Authorized Patients ({{ stats.authorized_patients }})
+        </a>
+      </div>
+    </div>
+    <div class="col-md-4 text-center d-none d-md-block">
+      <div style="font-size: 4.5rem; filter: drop-shadow(0 10px 15px rgba(30, 126, 90, 0.15));">
+        🏥📋
+      </div>
+      <small class="text-muted fw-bold d-block mt-1">Doctor ID: {{ current_user.user_id }}</small>
+    </div>
+  </div>
+</div>
+
+<!-- 4 Doctor Stat Cards -->
+<div class="row g-4 mb-4">
+  <div class="col-xl-3 col-sm-6">
+    <div class="stat-card stat-card-mint">
+      <div class="stat-icon" style="color: #2E7D32;">
+        <i class="fa-solid fa-hospital-user"></i>
+      </div>
+      <div>
+        <div class="stat-val">{{ stats.authorized_patients }}</div>
+        <div class="stat-label">Patients with Access</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xl-3 col-sm-6">
+    <div class="stat-card stat-card-peach">
+      <div class="stat-icon" style="color: #EF6C00;">
+        <i class="fa-solid fa-clock-rotate-left"></i>
+      </div>
+      <div>
+        <div class="stat-val">{{ stats.pending_requests }}</div>
+        <div class="stat-label">Pending Requests</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xl-3 col-sm-6">
+    <div class="stat-card stat-card-blue">
+      <div class="stat-icon" style="color: #1976D2;">
+        <i class="fa-solid fa-file-waveform"></i>
+      </div>
+      <div>
+        <div class="stat-val">{{ stats.accessible_records }}</div>
+        <div class="stat-label">Accessible Records</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xl-3 col-sm-6">
+    <div class="stat-card stat-card-lavender">
+      <div class="stat-icon" style="color: #7B1FA2;">
+        <i class="fa-solid fa-shield-check"></i>
+      </div>
+      <div>
+        <div class="stat-val">{{ stats.verified_records }}</div>
+        <div class="stat-label">Verified Records</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Search Patient Quick Widget & Authorized Patients -->
+<div class="row g-4">
+  <div class="col-lg-5">
+    <div class="cute-card h-100 p-4">
+      <div class="d-flex align-items-center gap-2 mb-3">
+        <div class="stat-icon" style="background: var(--pastel-mint); color: #1E7E5A; width: 40px; height: 40px; font-size: 1.1rem;">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </div>
+        <h5 class="fw-bold mb-0">Lookup Patient</h5>
+      </div>
+      <p class="text-muted small mb-3">
+        Patients must grant authorization before their medical records can be reviewed. Enter a Patient ID to inspect status or send a request.
+      </p>
+
+      <form method="GET" action="{{ url_for('doctor.search_patient') }}">
+        <div class="mb-3">
+          <label class="form-label-cute" for="patient_id">Unique Patient ID</label>
+          <input type="text" class="form-control form-control-cute" id="patient_id" name="patient_id" placeholder="e.g. PAT-2026-1001" required>
+        </div>
+        <button type="submit" class="btn btn-cute-primary w-100 py-2">
+          <i class="fa-solid fa-arrow-right me-1"></i> Search Patient
+        </button>
+      </form>
+
+      <div class="mt-4 p-3 rounded-4 bg-light">
+        <small class="fw-bold text-muted d-block mb-1">
+          <i class="fa-solid fa-circle-info text-primary me-1"></i> Quick Test Hint:
+        </small>
+        <small class="text-muted">
+          Try looking up demo patient <code>PAT-2026-1001</code> (Emily Rose).
+        </small>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-7">
+    <div class="cute-card h-100 p-0">
+      <div class="p-3 px-4 border-bottom d-flex align-items-center justify-content-between">
+        <div>
+          <h5 class="fw-bold mb-0">Authorized Patients</h5>
+          <small class="text-muted">Verified by Smart Contract</small>
+        </div>
+        <a href="{{ url_for('doctor.authorized_patients') }}" class="btn btn-sm btn-cute-light">View All</a>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-cute">
+          <thead>
+            <tr>
+              <th>Patient</th>
+              <th>Blood Group</th>
+              <th>Access Granted</th>
+              <th class="text-end">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if authorized_patients %}
+              {% for p in authorized_patients %}
+                <tr>
+                  <td>
+                    <div class="fw-bold">{{ p.full_name }}</div>
+                    <small class="badge badge-cute badge-cute-lavender">{{ p.patient_id }}</small>
+                  </td>
+                  <td>
+                    <span class="badge badge-cute badge-cute-peach">{{ p.blood_group or 'Unknown' }}</span>
+                  </td>
+                  <td>
+                    <small class="text-muted">{{ p.granted_at.strftime('%b %d, %Y') if p.granted_at else 'Active' }}</small>
+                  </td>
+                  <td class="text-end">
+                    <a href="{{ url_for('doctor.view_patient_records', patient_id=p.patient_id) }}" class="btn btn-cute-primary btn-sm">
+                      <i class="fa-solid fa-file-medical me-1"></i> View Records
+                    </a>
+                  </td>
+                </tr>
+              {% endfor %}
+            {% else %}
+              <tr>
+                <td colspan="4" class="text-center py-4 text-muted small">
+                  No authorized patients yet. Search for a patient to request record access.
+                </td>
+              </tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

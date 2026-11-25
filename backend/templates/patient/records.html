@@ -1,0 +1,129 @@
+{% extends "dashboard_layout.html" %}
+
+{% block title %}My Medical Records – MediChain{% endblock %}
+
+{% block header_title %}My Medical Records 📂{% endblock %}
+{% block header_subtitle %}Encrypted documents stored securely and anchored with immutable SHA-256 digests on Ethereum.{% endblock %}
+
+{% block content %}
+<!-- Top Action Bar -->
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+  <div class="d-flex flex-wrap gap-2">
+    <a href="{{ url_for('patient.records') }}" class="btn btn-sm btn-cute-light {% if not selected_category %}active fw-bold{% endif %}">
+      All Records ({{ records|length }})
+    </a>
+    <a href="{{ url_for('patient.records', category='Blood Test') }}" class="btn btn-sm btn-cute-light {% if selected_category == 'Blood Test' %}active fw-bold{% endif %}">
+      Blood Tests
+    </a>
+    <a href="{{ url_for('patient.records', category='X-Ray') }}" class="btn btn-sm btn-cute-light {% if selected_category == 'X-Ray' %}active fw-bold{% endif %}">
+      X-Rays
+    </a>
+    <a href="{{ url_for('patient.records', category='MRI Scan') }}" class="btn btn-sm btn-cute-light {% if selected_category == 'MRI Scan' %}active fw-bold{% endif %}">
+      MRI Scans
+    </a>
+    <a href="{{ url_for('patient.records', category='Prescription') }}" class="btn btn-sm btn-cute-light {% if selected_category == 'Prescription' %}active fw-bold{% endif %}">
+      Prescriptions
+    </a>
+  </div>
+
+  <a href="{{ url_for('patient.upload') }}" class="btn btn-cute-primary btn-sm">
+    <i class="fa-solid fa-cloud-arrow-up me-1"></i> Upload New Document
+  </a>
+</div>
+
+<!-- Records Table Card -->
+<div class="cute-card p-0">
+  <div class="table-responsive">
+    <table class="table table-cute">
+      <thead>
+        <tr>
+          <th>Record Details</th>
+          <th>Category</th>
+          <th>Blockchain SHA-256 Digest</th>
+          <th>Ethereum Tx</th>
+          <th>Uploaded</th>
+          <th class="text-end">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if records %}
+          {% for rec in records %}
+            <tr>
+              <td>
+                <div class="fw-bold text-dark">{{ rec.title }}</div>
+                <div class="d-flex align-items-center gap-2 mt-1">
+                  <span class="badge badge-cute badge-cute-lavender">{{ rec.record_id }}</span>
+                  <small class="text-muted">{{ rec.original_filename }} ({{ (rec.file_size / 1024)|round(1) }} KB)</small>
+                </div>
+                {% if rec.description %}
+                  <small class="text-muted d-block mt-1 fst-italic">{{ rec.description }}</small>
+                {% endif %}
+              </td>
+              <td>
+                {% if rec.category == 'Blood Test' %}
+                  <span class="badge badge-cute badge-cute-peach">{{ rec.category }}</span>
+                {% elif rec.category == 'X-Ray' %}
+                  <span class="badge badge-cute badge-cute-blue">{{ rec.category }}</span>
+                {% elif rec.category == 'MRI Scan' %}
+                  <span class="badge badge-cute badge-cute-lavender">{{ rec.category }}</span>
+                {% elif rec.category == 'Prescription' %}
+                  <span class="badge badge-cute badge-cute-pink">{{ rec.category }}</span>
+                {% else %}
+                  <span class="badge badge-cute badge-cute-mint">{{ rec.category }}</span>
+                {% endif %}
+              </td>
+              <td>
+                <div class="hash-badge" title="{{ rec.file_hash }}" style="max-width: 170px;">
+                  {{ rec.file_hash[:10] }}...{{ rec.file_hash[-8:] }}
+                </div>
+              </td>
+              <td>
+                {% if rec.blockchain_tx_hash %}
+                  <div class="hash-badge" title="{{ rec.blockchain_tx_hash }}" style="max-width: 140px; font-size: 0.75rem;">
+                    {{ rec.blockchain_tx_hash[:8] }}...{{ rec.blockchain_tx_hash[-6:] }}
+                  </div>
+                  <small class="d-block text-muted" style="font-size: 0.72rem;">Block #{{ rec.block_number or 1 }}</small>
+                {% else %}
+                  <span class="badge badge-cute badge-cute-danger">Pending Tx</span>
+                {% endif %}
+              </td>
+              <td>
+                <small class="text-muted">{{ rec.created_at.strftime('%Y-%m-%d %H:%M') if rec.created_at else 'Recent' }}</small>
+              </td>
+              <td class="text-end">
+                <div class="d-flex align-items-center justify-content-end gap-1">
+                  <!-- Real Blockchain Verification Button -->
+                  <button class="btn btn-sm btn-cute-light" title="Verify Integrity with Smart Contract" onclick="openVerifyModal('{{ rec.record_id }}')">
+                    <i class="fa-solid fa-shield-halved text-primary me-1"></i> Verify
+                  </button>
+                  
+                  <!-- Download Decrypted File -->
+                  <a href="{{ url_for('patient.download_record', record_id=rec.record_id) }}" class="btn btn-sm btn-cute-light" title="Download Decrypted File">
+                    <i class="fa-solid fa-download text-success"></i>
+                  </a>
+                  
+                  <!-- Test Tamper Simulation -->
+                  <button class="btn btn-sm btn-cute-light text-danger" title="Simulate Tampered Document (Viva Demo)" onclick="openVerifyModal('{{ rec.record_id }}', true)">
+                    <i class="fa-solid fa-bug"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td colspan="6" class="text-center py-5">
+              <div style="font-size: 2.5rem; opacity: 0.5;">📂</div>
+              <h6 class="text-muted fw-bold mt-2">No medical records match your selection</h6>
+              <p class="text-muted small mb-3">Upload your diagnostic reports to register them on the Ethereum blockchain.</p>
+              <a href="{{ url_for('patient.upload') }}" class="btn btn-cute-primary btn-sm">
+                <i class="fa-solid fa-cloud-arrow-up me-1"></i> Upload First Record
+              </a>
+            </td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

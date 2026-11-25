@@ -1,0 +1,133 @@
+{% extends "dashboard_layout.html" %}
+
+{% block title %}Search Patients – MediChain{% endblock %}
+
+{% block header_title %}Search Patients 🔍{% endblock %}
+{% block header_subtitle %}Lookup patient by unique identifier and request access to medical records.{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mb-4">
+  <div class="col-lg-8">
+    <div class="cute-card p-4">
+      <form method="GET" action="{{ url_for('doctor.search_patient') }}">
+        <label class="form-label-cute" for="patient_id">Enter Patient ID</label>
+        <div class="input-group">
+          <input type="text" class="form-control form-control-cute" id="patient_id" name="patient_id" value="{{ query_id or '' }}" placeholder="e.g. PAT-2026-1001" required>
+          <button class="btn btn-cute-primary px-4" type="submit">
+            <i class="fa-solid fa-magnifying-glass me-1"></i> Search
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% if searched %}
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      {% if patient %}
+        <div class="cute-card p-4">
+          <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4 pb-3 border-bottom">
+            <div class="d-flex align-items-center gap-3">
+              <div class="user-avatar" style="width: 52px; height: 52px; font-size: 1.4rem; background: var(--pastel-pink); color: #E91E63;">
+                {{ patient.full_name[:1] }}
+              </div>
+              <div>
+                <h4 class="fw-bold mb-0">{{ patient.full_name }}</h4>
+                <span class="badge badge-cute badge-cute-lavender mt-1">{{ patient.patient_id }}</span>
+              </div>
+            </div>
+
+            <!-- Permission Status Badge -->
+            <div>
+              {% if is_authorized %}
+                <span class="badge badge-cute badge-cute-mint fs-6 p-2 px-3">
+                  <i class="fa-solid fa-circle-check me-1"></i> Access Authorized
+                </span>
+              {% elif has_pending %}
+                <span class="badge badge-cute badge-cute-peach fs-6 p-2 px-3">
+                  <i class="fa-solid fa-clock me-1"></i> Request Pending Approval
+                </span>
+              {% else %}
+                <span class="badge badge-cute badge-cute-danger fs-6 p-2 px-3">
+                  <i class="fa-solid fa-lock me-1"></i> Access Not Authorized
+                </span>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="row g-3 mb-4">
+            <div class="col-sm-4">
+              <small class="text-muted fw-bold d-block">Blood Group</small>
+              <span class="badge badge-cute badge-cute-peach mt-1">{{ patient.blood_group or 'Unknown' }}</span>
+            </div>
+            <div class="col-sm-4">
+              <small class="text-muted fw-bold d-block">Gender</small>
+              <span class="text-dark fw-semibold">{{ patient.gender or 'Not specified' }}</span>
+            </div>
+            <div class="col-sm-4">
+              <small class="text-muted fw-bold d-block">Allergies</small>
+              <span class="text-danger fw-semibold">{{ patient.allergies or 'None reported' }}</span>
+            </div>
+          </div>
+
+          <!-- Action based on authorization -->
+          {% if is_authorized %}
+            <div class="p-3 rounded-4 mb-3" style="background: rgba(221, 245, 227, 0.4); border: 1px solid #BCE7C6;">
+              <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                <div>
+                  <h6 class="fw-bold text-success mb-0">You have verified access to this patient's records!</h6>
+                  <small class="text-muted">Smart contract permission verified on Ethereum localnet.</small>
+                </div>
+                <a href="{{ url_for('doctor.view_patient_records', patient_id=patient.patient_id) }}" class="btn btn-cute-primary">
+                  <i class="fa-solid fa-file-medical me-1"></i> Open Medical Records
+                </a>
+              </div>
+            </div>
+          {% elif has_pending %}
+            <div class="p-3 rounded-4 mb-3" style="background: rgba(255, 232, 214, 0.4); border: 1px solid #FFD2B3;">
+              <div class="d-flex align-items-center gap-2">
+                <i class="fa-solid fa-hourglass-half text-warning fs-5"></i>
+                <div>
+                  <h6 class="fw-bold mb-0">Access Request Already Submitted</h6>
+                  <small class="text-muted">Waiting for {{ patient.full_name }} to approve from their patient dashboard.</small>
+                </div>
+              </div>
+            </div>
+          {% else %}
+            <!-- Request Access Form -->
+            <div class="p-4 rounded-4" style="background: rgba(234, 226, 255, 0.35); border: 1px dashed #D3C2FF;">
+              <h5 class="fw-bold mb-2">Request Access to Records</h5>
+              <p class="text-muted small mb-3">
+                Due to MediChain's patient sovereignty policy, you must provide a valid clinical purpose before {{ patient.full_name }} can grant you access.
+              </p>
+
+              <form method="POST" action="{{ url_for('doctor.send_access_request') }}">
+                <input type="hidden" name="patient_id" value="{{ patient.patient_id }}">
+                
+                <div class="mb-3">
+                  <label class="form-label-cute" for="purpose">Clinical Purpose / Reason for Consultation</label>
+                  <textarea class="form-control form-control-cute" id="purpose" name="purpose" rows="3" placeholder="e.g. Outpatient cardiology evaluation, reviewing past blood panels and ECGs..." required></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-cute-primary w-100 py-2">
+                  <i class="fa-solid fa-paper-plane me-1"></i> Send Access Request to Patient
+                </button>
+              </form>
+            </div>
+          {% endif %}
+
+        </div>
+      {% else %}
+        <div class="cute-card text-center py-5">
+          <div style="font-size: 3rem; opacity: 0.5;">🔍</div>
+          <h5 class="fw-bold mt-2">No Patient Found</h5>
+          <p class="text-muted small mb-0">
+            No registered patient matches ID <code>{{ query_id }}</code>. Please double check the ID format (e.g. PAT-2026-1001).
+          </p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+{% endif %}
+{% endblock %}

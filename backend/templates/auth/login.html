@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}Sign In – MediChain{% endblock %}
+
+{% block layout %}
+<div class="container min-vh-100 d-flex align-items-center justify-content-center py-5">
+  <div class="row justify-content-center w-100">
+    <div class="col-lg-5 col-md-7 col-sm-9">
+      
+      <!-- Back Link -->
+      <div class="mb-3">
+        <a href="{{ url_for('main.index') }}" class="fw-semibold text-muted small">
+          <i class="fa-solid fa-arrow-left me-1"></i> Back to Homepage
+        </a>
+      </div>
+
+      <div class="cute-card p-4 p-md-5">
+        <!-- Cute Logo & Header -->
+        <div class="text-center mb-4">
+          <div class="brand-logo-icon mx-auto mb-3" style="width: 58px; height: 58px; font-size: 1.8rem;">
+            <i class="fa-solid fa-heart-pulse"></i>
+          </div>
+          <h3 class="fw-bold mb-1">Welcome Back! 💗</h3>
+          <p class="text-muted small">Sign in to manage your medical records safely</p>
+        </div>
+
+        <form method="POST" action="{{ url_for('auth.login') }}">
+          <div class="mb-3">
+            <label class="form-label form-label-cute" for="email">
+              <i class="fa-solid fa-envelope text-muted me-1"></i> Email Address
+            </label>
+            <input type="email" class="form-control form-control-cute" id="email" name="email" placeholder="e.g. emily@example.com" required>
+          </div>
+
+          <div class="mb-3">
+            <div class="d-flex justify-content-between align-items-center">
+              <label class="form-label form-label-cute" for="password">
+                <i class="fa-solid fa-lock text-muted me-1"></i> Password
+              </label>
+            </div>
+            <input type="password" class="form-control form-control-cute" id="password" name="password" placeholder="Enter your password" required>
+          </div>
+
+          <button type="submit" class="btn btn-cute-primary w-100 py-2 fs-6 mb-3">
+            <i class="fa-solid fa-arrow-right-to-bracket me-2"></i> Sign In to Account
+          </button>
+        </form>
+
+        <!-- One-Click Demo Credentials for Viva / Testing -->
+        <div class="p-3 rounded-4 mt-3" style="background: linear-gradient(135deg, rgba(252, 228, 236, 0.5) 0%, rgba(220, 238, 255, 0.5) 100%); border: 1px dashed #D3C2FF;">
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <small class="fw-bold text-muted">
+              <i class="fa-solid fa-wand-magic-sparkles text-primary me-1"></i> Quick Demo Logins:
+            </small>
+            <span class="badge badge-cute badge-cute-lavender">Instant Viva Fill</span>
+          </div>
+          <div class="d-flex flex-wrap gap-2">
+            <button type="button" class="btn btn-sm btn-cute-light flex-grow-1" onclick="fillLogin('emily@example.com', 'Patient@123')">
+              <i class="fa-solid fa-user text-danger me-1"></i> Patient
+            </button>
+            <button type="button" class="btn btn-sm btn-cute-light flex-grow-1" onclick="fillLogin('dr.sarah@example.com', 'Doctor@123')">
+              <i class="fa-solid fa-user-doctor text-success me-1"></i> Doctor
+            </button>
+            <button type="button" class="btn btn-sm btn-cute-light flex-grow-1" onclick="fillLogin('admin@medichain.com', 'Admin@12345')">
+              <i class="fa-solid fa-shield-cat text-primary me-1"></i> Admin
+            </button>
+          </div>
+        </div>
+
+        <div class="text-center mt-4 pt-3 border-top">
+          <small class="text-muted">
+            Don't have an account yet? 
+            <a href="{{ url_for('auth.register') }}" class="fw-bold">Create Account</a>
+          </small>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  function fillLogin(email, pass) {
+    document.getElementById('email').value = email;
+    document.getElementById('password').value = pass;
+  }
+</script>
+{% endblock %}

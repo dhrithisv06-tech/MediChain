@@ -195,4 +195,4 @@ def init_db():
             ("DOC-2026-2001", "DOC-2026-2001", "Cardiology", "MD-CARDIO-88921", "St. Jude Memorial Hospital", 8, "Consultant Cardiologist specializing in preventive cardiac wellness and non-invasive diagnostics."),
             commit=True
         )
-        logger.info("Demo doctor seeded: dr.sarah@example.com / Doctor@123 (DOC-2026-2001)")
+    

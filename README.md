@@ -1,9 +1,9 @@
+
 # MediChain – Medical Record Management System
 
 > **"Your Health Records. Your Control. Secured by Blockchain."**  
 > B.Tech Information Science Mini-Project | Full-Stack Healthcare DApp
 
----
 
 ## 1. Project Introduction
 
@@ -11,7 +11,7 @@
 
 In traditional medical record architectures, patients have little transparency or control over who accesses their confidential diagnostic data, and centralized servers are single points of failure vulnerable to unauthorized tampering, data leaks, and ransomware. MediChain restores patient sovereignty by enforcing an off-chain/on-chain hybrid architecture: medical files are encrypted and stored securely off-chain, while immutable cryptographic fingerprints (SHA-256) and patient-controlled access permissions are managed directly by an Ethereum smart contract.
 
----
+
 
 ## 2. Problem Statement
 
@@ -20,7 +20,7 @@ In traditional medical record architectures, patients have little transparency o
 3. **Data Integrity Hazards**: There is no mathematical mechanism for a doctor to guarantee that a medical report was not subtly altered (e.g., modified lab values or dosage changes) during transfer or storage.
 4. **Intimidating UI/UX**: Existing medical software often features sterile, intimidating, and complex user interfaces that hinder patient engagement.
 
----
+
 
 ## 3. Project Objectives
 
@@ -32,7 +32,7 @@ In traditional medical record architectures, patients have little transparency o
 - Implement real-time **Tamper Detection & Verification**, enabling any party to mathematically prove whether a medical file has been altered.
 - Provide a full automated test suite covering all 15 operational test cases.
 
----
+
 
 ## 4. Proposed Solution & Architecture
 
@@ -84,7 +84,7 @@ flowchart TD
     CONTRACT --> TX_LEDGER
 ```
 
----
+
 
 ## 5. Technology Stack
 
@@ -98,7 +98,7 @@ flowchart TD
 | **Integrity Proofs** | Cryptographic Hash Function | SHA-256 (256-bit hexadecimal digest) |
 | **Testing** | Pytest & Hardhat Test Runner | 15 Python Automated Tests, 4 Solidity Unit Tests |
 
----
+
 
 ## 6. Color Palette & UI Design System
 
@@ -113,7 +113,7 @@ Inspired by clean, modern pastel healthcare software:
 - **Primary Accent**: `#5EAA8D` / `#78BFA3` (Action buttons, primary highlights)
 - **Dark Text**: `#344054` (High-contrast readability, typography)
 
----
+
 
 ## 7. Project Folder Structure
 
@@ -170,7 +170,7 @@ MediChain/
 └── README.md                          # Complete project documentation
 ```
 
----
+
 
 ## 8. Database Design (`schema.sql`)
 
@@ -186,7 +186,7 @@ Database Name: `medical_record_blockchain`
 7. **`audit_logs`**: System security trail recording `user_id`, `user_role`, `action`, `details`, IP address, and creation timestamp.
 8. **`blockchain_transactions`**: Local mirror of on-chain receipts containing `tx_hash`, `block_number`, contract function, gas used, and entity IDs.
 
----
+
 
 ## 9. Smart Contract Architecture (`MedicalRecord.sol`)
 
@@ -200,7 +200,7 @@ The smart contract is written in **Solidity 0.8.20** and deployed to Hardhat loc
 - `verifyRecord(string _recordId, string _candidateHash) external returns (bool isValid, string storedHash)`: Compares candidate SHA-256 hash with stored hash and emits `RecordVerified`.
 - `getRecord(string _recordId) external view returns (...)`: Retrieves registered hash, timestamp, and metadata.
 
----
+
 
 ## 10. Installation & Setup Instructions
 
@@ -235,7 +235,7 @@ Copy `.env.example` to `.env` (already pre-configured with secure keys):
 cp .env.example .env
 ```
 
----
+
 
 ## 11. How to Run the Application
 
@@ -274,7 +274,7 @@ python run.py
 Open your browser at:  
 👉 **`http://127.0.0.1:5001`**
 
----
+
 
 ## 12. Pre-Seeded Demo Credentials for Presentation / Viva
 
@@ -286,7 +286,7 @@ Open your browser at:
 
 *Tip: The login page includes 1-click **Instant Viva Fill** buttons to autofill demo credentials with a single tap.*
 
----
+
 
 ## 13. Testing Instructions
 
@@ -320,7 +320,7 @@ npx hardhat test
 ```
 Result: `4 passing (4 solidity)`
 
----
+
 
 ## 14. Document Tampering Demonstration (Live Viva Demo)
 
@@ -336,7 +336,7 @@ Result: `4 passing (4 solidity)`
    - Calculated Tampered Hash: `81e4d068ba12...`
    - Mathematical proof that any unauthorized change is immediately detected.
 
----
+
 
 ## 15. Limitations
 
@@ -344,7 +344,7 @@ Result: `4 passing (4 solidity)`
 - **Key Storage**: The master AES encryption key is managed securely via server-side environment variables. In a multi-tenant enterprise deployment, hardware security modules (HSM) or envelope encryption with patient-held private keys can be added.
 - **File Storage**: Encrypted files are stored on server disk storage.
 
----
+
 
 ## 16. Future Enhancements
 
@@ -353,7 +353,7 @@ Result: `4 passing (4 solidity)`
 - **Zero-Knowledge Proofs (zk-SNARKs)**: Allow doctors to verify that a patient's test is within a normal range without revealing the exact numeric value.
 - **Mobile Companion App**: Flutter or React Native mobile client for biometric face/fingerprint authentication.
 
----
+
 
 ## 17. Project Viva & Academic Defense Highlights
 
@@ -362,5 +362,7 @@ Result: `4 passing (4 solidity)`
 - **Defense against Tampering**: Proof-of-existence via Ethereum transaction receipts and cryptographic hash comparison.
 - **Defense against Unauthorized Access**: Backend decorators verify both SQL session state and on-chain permission before serving any decrypted byte.
 
----
+
 *MediChain – B.Tech Information Science Capstone Project*
+
+# MediChain

@@ -10,7 +10,7 @@ BACKEND_DIR = os.path.abspath(os.path.dirname(__file__))
 
 class Config:
     # Flask Security
-    SECRET_KEY = os.getenv("SECRET_KEY", secrets.token_hex(32))
+    SECRET_KEY = os.getenv("SECRET_KEY")
     PERMANENT_SESSION_LIFETIME = timedelta(hours=3)
     SESSION_COOKIE_HTTPONLY = True
     SESSION_COOKIE_SAMESITE = "Lax"
@@ -38,4 +38,4 @@ class Config:
 
     # Admin Credentials for Seeding
     ADMIN_EMAIL = os.getenv("ADMIN_EMAIL", "admin@medichain.com")
-    ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "Admin@12345")
+    ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD")
